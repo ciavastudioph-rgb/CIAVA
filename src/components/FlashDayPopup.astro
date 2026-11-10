@@ -43,10 +43,11 @@ const linkPersonalizado = waLink('¡Hola Ciava! Quiero algo personalizado para m
         <h2 id="fd-title" class="fd-title">FLASH <br class="fd-br" />DAY</h2>
         <p class="fd-body">
           <strong>Una modelo, un estudio, varias marcas.</strong><br />
-          Sumá tus looks a la próxima jornada y recibí tus fotos editadas en <strong class="fd-u">72 hs</strong>.
+          Sumá tus looks a la próxima jornada<br />
+          y recibí tus fotos editadas en <strong class="fd-u">72 hs</strong>.
         </p>
         <p class="fd-price-label">Contenido profesional para tu marca</p>
-        <p class="fd-price-row">desde <span class="fd-price">{config.precio}</span> {config.precioDetalle}</p>
+        <p class="fd-price-row">desde <span class="fd-price">{config.precio}</span> <strong class="fd-u fd-strong">{config.precioDetalle}</strong></p>
         <div class="fd-actions">
           <a href={linkFechas} target="_blank" rel="noopener" class="fd-btn" data-fd-seen>VER PRÓXIMAS FECHAS</a>
           <a href={linkPersonalizado} target="_blank" rel="noopener" class="fd-btn fd-btn-alt" data-fd-seen>
@@ -81,6 +82,7 @@ const linkPersonalizado = waLink('¡Hola Ciava! Quiero algo personalizado para m
   .fd-title { font-size: clamp(3rem, 8vw, 5.75rem); line-height: .92; letter-spacing: -.01em; margin: 0 0 20px; color: #111111; }
   .fd-body { font-size: 15px; line-height: 1.55; color: #2a2018; margin: 0 0 16px; }
   .fd-body strong { color: #111111; font-weight: 600; }
+  .fd-strong { color: #111111; font-weight: 600; }
   .fd-u { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px; }
   .fd-price-label { font-size: 15px; margin: 0 0 6px; color: #2a2018; }
   .fd-price-row { font-size: 15px; color: #2a2018; margin: 0 0 26px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }

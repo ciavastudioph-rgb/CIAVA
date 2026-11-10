@@ -1,0 +1,449 @@
+---
+/**
+ * Página Flash Day (/flash-day)
+ * - Los datos (packs y próximas jornadas) están en src/data/flashdays.json
+ * - Las fechas que ya pasaron se ocultan solas (en la próxima publicación).
+ * - Estados de una jornada: "disponible", "ultimos" o "completo".
+ * - La foto de la portada sale de src/assets/images/flashday/ (la misma del pop-up).
+ */
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { resolveImageWarn } from '../lib/images';
+import data from '../data/flashdays.json';
+import settings from '../data/settings.json';
+
+const numero = (settings.contact.whatsapp || '').replace(/[^\d]/g, '');
+const waLink = (msg: string) => `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
+const linkPersonalizado = waLink('¡Hola Ciava! Quiero algo personalizado para mi marca, ¿me cotizan? 😊');
+const linkAvisame = waLink('¡Hola Ciava! Quiero que me avisen cuando haya nuevas fechas de Flash Day 📸');
+
+const portadas = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/images/flashday/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}',
+  { eager: true }
+);
+const portada = Object.values(portadas)[0]?.default ?? null;
+
+const MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+const DIAS = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+const hoy = new Date();
+hoy.setHours(0, 0, 0, 0);
+
+type Pack = { nombre: string; precio: number | null; unidad?: string; descripcion?: string };
+const packs: Pack[] = data.packs as Pack[];
+const precio = (n: number | null) => (n ? '$' + n.toLocaleString('es-AR') : 'Consultar');
+const desdePrecio = packs.map((p) => p.precio).filter((n): n is number => !!n).sort((a, b) => a - b)[0] ?? null;
+
+const ESTADOS: Record<string, { texto: string; clase: string }> = {
+  disponible: { texto: 'Cupos disponibles', clase: 'ok' },
+  ultimos: { texto: 'Últimos cupos', clase: 'warn' },
+  completo: { texto: 'Completo', clase: 'full' },
+};
+
+const jornadas = (data.jornadas as any[])
+  .map((j, i) => {
+    const [y, m, d] = String(j.fecha).split('-').map(Number);
+    const dt = new Date(y, (m || 1) - 1, d || 1);
+    const fotos = ((j.fotos || []) as string[])
+      .map((f) => resolveImageWarn(f, `flash day ${j.fecha}`))
+      .filter((x): x is ImageMetadata => !!x);
+    const ig = String(j.instagram || '').trim().replace(/^@/, '');
+    const estado = ESTADOS[j.estado] ?? ESTADOS.disponible;
+    return {
+      ...j, i, dt, fotos, ig, estado,
+      completo: j.estado === 'completo',
+      dia: DIAS[dt.getDay()], num: String(d).padStart(2, '0'), mes: MESES[(m || 1) - 1],
+    };
+  })
+  .filter((j) => j.dt >= hoy)
+  .sort((a, b) => a.dt.getTime() - b.dt.getTime());
+
+const datosCliente = {
+  numero,
+  packs,
+  jornadas: Object.fromEntries(jornadas.map((j) => [j.i, { texto: `${j.dia} ${j.num} ${j.mes}`, modelo: j.modelo, horario: j.horario || '' }])),
+};
+---
+
+<Layout
+  title="Flash Day | Jornadas de fotos compartidas para marcas | CIAVA Studio"
+  description="Flash Day de CIAVA Studio: una modelo, un estudio, varias marcas. Sumá tus looks a la próxima jornada en Nordelta y recibí tus fotos editadas en 72 hs."
+  keywords="flash day, fotos para marcas, fotografía de moda económica, jornada compartida, fotos con modelo, estudio nordelta, contenido para tienda online"
+>
+  <div class="fdp">
+    <!-- PORTADA -->
+    <section class="fdp-hero">
+      <div class="fdp-hero-text">
+        <p class="fdp-eyebrow">JORNADAS COMPARTIDAS PARA MARCAS</p>
+        <span class="fdp-rule"></span>
+        <h1 class="fdp-title">FLASH <br class="fdp-br" />DAY</h1>
+        <p class="fdp-lead">
+          <strong>Una modelo, un estudio, varias marcas.</strong><br />
+          Sumá tus looks a la próxima jornada<br />
+          y recibí tus fotos editadas en <strong class="fdp-u">72 hs</strong>.
+        </p>
+        {desdePrecio && (
+          <p class="fdp-price-row">desde <span class="fdp-price">{precio(desdePrecio)}</span> <strong class="fdp-u">por look</strong></p>
+        )}
+        <div class="fdp-actions">
+          <a href="#fechas" class="fdp-btn">VER PRÓXIMAS FECHAS</a>
+          <a href={linkPersonalizado} target="_blank" rel="noopener" class="fdp-btn fdp-btn-alt">QUIERO ALGO PERSONALIZADO</a>
+        </div>
+      </div>
+      {portada && (
+        <div class="fdp-hero-photo">
+          <Image src={portada} alt="Modelo en una jornada de Flash Day de CIAVA Studio" widths={[600, 900, 1200]} sizes="(max-width: 767px) 100vw, 45vw" class="fdp-cover" loading="eager" quality={80} />
+        </div>
+      )}
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section class="fdp-section">
+      <h2 class="fdp-h2">¿CÓMO FUNCIONA?</h2>
+      <ol class="fdp-steps">
+        <li><span>01</span><h3>Elegís tu fecha</h3><p>Mirá las próximas jornadas y la modelo de cada una.</p></li>
+        <li><span>02</span><h3>Reservás tu lugar</h3><p>Nos escribís por WhatsApp, confirmás con <strong>ACEPTO + el nombre de tu marca</strong> y te pasamos los datos de transferencia.</p></li>
+        <li><span>03</span><h3>Mandás tus productos</h3><p>Todo en una caja cerrada, sí o sí el día anterior a la jornada.</p></li>
+        <li><span>04</span><h3>Recibís tu contenido</h3><p>Fotos editadas en 72 hs + un video recopilado con tus prendas en uso.</p></li>
+      </ol>
+    </section>
+
+    <!-- PRÓXIMAS FECHAS -->
+    <section id="fechas" class="fdp-section fdp-fechas">
+      <h2 class="fdp-h2">PRÓXIMAS FECHAS</h2>
+      <p class="fdp-sub">Tocá una fecha para ver a la modelo, elegir tu pack y reservar.</p>
+      {jornadas.length > 0 ? (
+        <div class="fdp-grid">
+          {jornadas.map((j) => (
+            <button type="button" class={`fdp-card ${j.completo ? 'is-full' : ''}`} data-open={j.i}>
+              <div class="fdp-card-img">
+                {j.fotos[0] ? (
+                  <Image src={j.fotos[0]} alt={`Modelo del Flash Day ${j.dia} ${j.num} ${j.mes}`} widths={[400, 700]} sizes="(max-width: 767px) 100vw, 33vw" class="fdp-cover" loading="lazy" quality={75} />
+                ) : (
+                  <span class="fdp-card-ph">CIAVA</span>
+                )}
+                <div class="fdp-date"><span>{j.dia}</span><strong>{j.num}</strong><span>{j.mes}</span></div>
+              </div>
+              <div class="fdp-card-body">
+                <span class={`fdp-chip ${j.estado.clase}`}>{j.estado.texto}</span>
+                <h3>{j.modelo}</h3>
+                {j.horario && <p>{j.horario}</p>}
+                <span class="fdp-more">{j.completo ? 'Ver jornada' : 'Ver y reservar'} →</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div class="fdp-empty">
+          <p>Estamos armando las próximas fechas.</p>
+          <a href={linkAvisame} target="_blank" rel="noopener" class="fdp-btn">AVISAME CUANDO HAYA FECHAS</a>
+        </div>
+      )}
+    </section>
+
+    <!-- PACKS -->
+    <section class="fdp-section">
+      <h2 class="fdp-h2">PACKS</h2>
+      <div class="fdp-packs">
+        {packs.map((p) => (
+          <div class="fdp-pack-card">
+            <h3>{p.nombre}</h3>
+            <p class="fdp-pack-price">{precio(p.precio)} {p.precio && p.unidad && <small>{p.unidad}</small>}</p>
+            {p.descripcion && <p>{p.descripcion}</p>}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- CONDICIONES -->
+    <section class="fdp-section">
+      <h2 class="fdp-h2">A TENER EN CUENTA</h2>
+      <ul class="fdp-cond">
+        <li>Cada look incluye hasta dos prendas (por ejemplo, arriba y abajo). Con accesorios es igual: un bolso es un look.</li>
+        <li>Los productos se entregan en una caja cerrada, sí o sí el día anterior a la jornada.</li>
+        <li>Incluye una ronda de ajustes básicos (luz, foco, detalles). Los cambios extra se cobran aparte.</li>
+        <li>Las fotos no se pueden modificar con IA para crear otras variantes: cada producto o color cuenta como un look.</li>
+        <li>Todas las aclaraciones en un solo mensaje escrito, sin audios.</li>
+      </ul>
+    </section>
+
+    <!-- CIERRE -->
+    <section class="fdp-final">
+      <h2 class="fdp-h2">¿BUSCÁS ALGO A MEDIDA?</h2>
+      <p>Hacemos producciones personalizadas para tu marca, con tu modelo, tus horarios y vos en el set.</p>
+      <a href={linkPersonalizado} target="_blank" rel="noopener" class="fdp-btn">QUIERO ALGO PERSONALIZADO</a>
+    </section>
+  </div>
+
+  <!-- DETALLE DE CADA JORNADA -->
+  <div id="fdp-modal" class="fdp-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="fdp-modal-bg" data-close></div>
+    <div class="fdp-modal-card">
+      <button type="button" class="fdp-x" aria-label="Cerrar" data-close>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+      {jornadas.map((j) => (
+        <div class="fdp-detail" data-j={j.i} hidden>
+          <div class="fdp-gal">
+            {j.fotos.length > 0 ? j.fotos.map((f, k) => (
+              <Image src={f} alt={`${j.modelo} — foto ${k + 1}`} widths={[400, 800]} sizes="(max-width: 767px) 90vw, 420px" class="fdp-gal-img" loading="lazy" quality={78} />
+            )) : (
+              <div class="fdp-gal-ph">Fotos de la modelo próximamente</div>
+            )}
+          </div>
+          <div class="fdp-info">
+            <p class="fdp-eyebrow">FLASH DAY · {j.dia} {j.num} {j.mes}{j.horario ? ` · ${j.horario}` : ''}</p>
+            <h3 class="fdp-model">{j.modelo}</h3>
+            {j.ig && (
+              <a class="fdp-ig" href={`https://www.instagram.com/${j.ig}/`} target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>
+                @{j.ig} · ver más de su trabajo
+              </a>
+            )}
+            <span class={`fdp-chip ${j.estado.clase}`}>{j.estado.texto}</span>
+
+            {j.completo ? (
+              <div class="fdp-full">
+                <p>Esta jornada ya está completa. Escribinos y te avisamos cuando abramos la próxima.</p>
+                <a href={linkAvisame} target="_blank" rel="noopener" class="fdp-btn">AVISAME PRÓXIMA FECHA</a>
+              </div>
+            ) : (
+              <div class="fdp-form" data-form={j.i}>
+                <p class="fdp-label">1. Elegí tu pack</p>
+                {packs.map((p, k) => (
+                  <label class="fdp-opt">
+                    <input type="radio" name={`pack-${j.i}`} value={k} checked={k === 0} />
+                    <span class="fdp-opt-txt"><strong>{p.nombre}</strong><small>{p.descripcion}</small></span>
+                    <span class="fdp-opt-price">{precio(p.precio)}</span>
+                  </label>
+                ))}
+                <p class="fdp-label">2. ¿Cuántos looks?</p>
+                <div class="fdp-counter">
+                  <button type="button" data-step="-1" aria-label="Menos looks">−</button>
+                  <output data-looks>1</output>
+                  <button type="button" data-step="1" aria-label="Más looks">+</button>
+                </div>
+                <p class="fdp-hint">Cada look = hasta 2 prendas o 1 accesorio.</p>
+                <p class="fdp-label">3. Tu marca</p>
+                <input class="fdp-input" type="text" data-marca placeholder="Nombre de tu marca" autocomplete="organization" />
+                <div class="fdp-total"><span>Total estimado</span><strong data-total>—</strong></div>
+                <a class="fdp-btn fdp-btn-wa" data-reservar href="#" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" /></svg>
+                  RESERVAR POR WHATSAPP
+                </a>
+                <p class="fdp-hint">Se abre WhatsApp con tu pedido armado. Te confirmamos el lugar y te pasamos los datos de transferencia.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <script type="application/json" id="fdp-data" set:html={JSON.stringify(datosCliente)}></script>
+
+  <Footer />
+</Layout>
+
+<style is:global>
+  .fdp { color: #111111; padding-top: 76px; }
+  @media (min-width: 768px) { .fdp { padding-top: 92px; } }
+  .fdp-eyebrow { font-size: 11px; letter-spacing: .3em; margin: 0 0 10px; color: #111111; }
+  .fdp-rule { display: block; width: 44px; height: 2px; background: #111111; margin-bottom: 18px; }
+  .fdp-u { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px; font-weight: 600; color: #111111; }
+  .fdp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-align: center; background: #111111; color: #ffffff; font-weight: 600; font-size: 12px; letter-spacing: .2em; padding: 14px 26px; border-radius: 999px; border: 1.5px solid #111111; transition: transform .2s, background .2s, color .2s; }
+  .fdp-btn:hover { transform: translateY(-1px); }
+  .fdp-btn-alt { background: transparent; color: #111111; }
+  .fdp-btn-alt:hover { background: #111111; color: #ffffff; }
+
+  /* Portada */
+  .fdp-hero { display: flex; background: #d6af88; min-height: calc(100vh - 92px); }
+  .fdp-hero-text { flex: 1 1 55%; display: flex; flex-direction: column; justify-content: center; padding: 64px clamp(24px, 7vw, 120px); }
+  .fdp-hero-photo { flex: 0 0 45%; position: relative; min-height: 520px; }
+  .fdp-cover { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 20%; }
+  .fdp-title { font-size: clamp(3.4rem, 10vw, 8.5rem); line-height: .9; letter-spacing: -.01em; margin: 0 0 24px; color: #111111; }
+  .fdp-lead { font-size: 17px; line-height: 1.6; color: #2a2018; margin: 0 0 20px; }
+  .fdp-lead strong { color: #111111; font-weight: 600; }
+  .fdp-price-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 16px; color: #2a2018; margin: 0 0 30px; }
+  .fdp-price { background: #ffffff; color: #111111; font-weight: 700; font-size: 26px; line-height: 1.2; padding: 4px 16px; border-radius: 999px; animation: fdpBounce 3.2s ease-in-out 1.5s infinite; }
+  @keyframes fdpBounce { 0%, 70%, 100% { transform: translateY(0); } 76% { transform: translateY(-7px); } 82% { transform: translateY(0); } 88% { transform: translateY(-3px); } 94% { transform: translateY(0); } }
+  .fdp-actions { display: flex; flex-direction: column; gap: 12px; max-width: 360px; }
+
+  /* Secciones */
+  .fdp-section { max-width: 1120px; margin: 0 auto; padding: 72px 24px 8px; }
+  .fdp-h2 { font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: .12em; text-align: center; margin: 0 0 12px; color: #111111; }
+  .fdp-sub { text-align: center; color: #666666; font-size: 14px; margin: 0 0 32px; }
+  .fdp-steps { list-style: none; padding: 0; margin: 32px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .fdp-steps li { background: #f6f6f6; border-radius: 20px; padding: 24px 22px; }
+  .fdp-steps span { display: block; font-size: 13px; letter-spacing: .2em; color: #b08a63; font-weight: 600; margin-bottom: 10px; }
+  .fdp-steps h3 { font-size: 17px; letter-spacing: .02em; margin: 0 0 8px; color: #111111; }
+  .fdp-steps p { font-size: 14px; line-height: 1.55; color: #555555; margin: 0; }
+  .fdp-steps strong { color: #111111; font-weight: 600; }
+
+  /* Tarjetas de fechas */
+  .fdp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  .fdp-card { text-align: left; background: #ffffff; border: 1px solid #ececec; border-radius: 22px; overflow: hidden; cursor: pointer; padding: 0; transition: transform .25s, box-shadow .25s; }
+  .fdp-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(0,0,0,.10); }
+  .fdp-card.is-full { opacity: .65; }
+  .fdp-card-img { position: relative; aspect-ratio: 4 / 5; background: #d6af88; }
+  .fdp-card-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; letter-spacing: .3em; color: rgba(17,17,17,.25); font-size: 22px; }
+  .fdp-date { position: absolute; top: 14px; left: 14px; background: #ffffff; border-radius: 16px; padding: 8px 12px; text-align: center; line-height: 1.05; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .fdp-date span { display: block; font-size: 10px; letter-spacing: .2em; color: #555555; }
+  .fdp-date strong { display: block; font-size: 28px; font-weight: 700; color: #111111; }
+  .fdp-card-body { padding: 18px 20px 22px; }
+  .fdp-card-body h3 { font-size: 18px; margin: 10px 0 4px; letter-spacing: .02em; color: #111111; }
+  .fdp-card-body p { font-size: 13px; color: #666666; margin: 0 0 10px; }
+  .fdp-more { font-size: 12px; letter-spacing: .15em; font-weight: 600; color: #111111; }
+  .fdp-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: .08em; font-weight: 600; padding: 5px 11px; border-radius: 999px; }
+  .fdp-chip::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: currentColor; }
+  .fdp-chip.ok { background: #e7f6ec; color: #1e7a3d; }
+  .fdp-chip.warn { background: #fdf0e1; color: #b0601a; }
+  .fdp-chip.full { background: #eeeeee; color: #777777; }
+  .fdp-empty { text-align: center; padding: 24px 0; }
+  .fdp-empty p { color: #555555; margin-bottom: 18px; }
+
+  /* Packs */
+  .fdp-packs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 28px; }
+  .fdp-pack-card { border: 1.5px solid #111111; border-radius: 22px; padding: 26px 24px; }
+  .fdp-pack-card h3 { font-size: 18px; margin: 0 0 6px; letter-spacing: .04em; color: #111111; }
+  .fdp-pack-price { font-size: 26px; font-weight: 700; margin: 0 0 10px; color: #111111; }
+  .fdp-pack-price small { font-size: 13px; font-weight: 500; color: #555555; }
+  .fdp-pack-card p:last-child { font-size: 14px; color: #555555; line-height: 1.55; margin: 0; }
+
+  /* Condiciones */
+  .fdp-cond { max-width: 760px; margin: 24px auto 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  .fdp-cond li { background: #f6f6f6; border-radius: 16px; padding: 14px 18px 14px 44px; position: relative; font-size: 14px; line-height: 1.55; color: #333333; }
+  .fdp-cond li::before { content: '✓'; position: absolute; left: 18px; top: 13px; font-weight: 700; color: #111111; }
+
+  /* Cierre */
+  .fdp-final { text-align: center; max-width: 720px; margin: 72px auto 80px; padding: 48px 24px; background: #d6af88; border-radius: 28px; }
+  .fdp-final p { color: #2a2018; margin: 0 0 22px; }
+
+  /* Detalle (ventana) */
+  .fdp-modal { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .fdp-modal.is-open { opacity: 1; pointer-events: auto; }
+  .fdp-modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
+  .fdp-modal-card { position: relative; width: 100%; max-width: 980px; max-height: calc(100vh - 32px); overflow-y: auto; background: #ffffff; border-radius: 26px; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+  .fdp-x { position: sticky; top: 14px; float: right; margin: 14px 14px 0 0; z-index: 2; width: 38px; height: 38px; min-width: 38px; min-height: 38px; border-radius: 999px; background: #ffffff; color: #111111; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,.18); cursor: pointer; }
+  .fdp-detail { display: grid; grid-template-columns: 1fr 1fr; }
+  .fdp-detail[hidden] { display: none; }
+  .fdp-gal { background: #d6af88; display: grid; gap: 4px; align-content: start; max-height: calc(100vh - 32px); overflow-y: auto; border-radius: 26px 0 0 26px; }
+  .fdp-gal-img { width: 100%; height: auto; display: block; }
+  .fdp-gal-ph { min-height: 420px; display: flex; align-items: center; justify-content: center; color: rgba(17,17,17,.5); font-size: 14px; padding: 24px; text-align: center; }
+  .fdp-info { padding: 36px 34px 32px; }
+  .fdp-model { font-size: 30px; margin: 4px 0 10px; letter-spacing: .02em; color: #111111; }
+  .fdp-ig { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #111111; text-decoration: underline; text-underline-offset: 3px; margin-bottom: 14px; }
+  .fdp-label { font-size: 12px; letter-spacing: .18em; font-weight: 600; margin: 22px 0 10px; color: #111111; }
+  .fdp-opt { display: flex; align-items: center; gap: 12px; border: 1.5px solid #e2e2e2; border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; transition: border-color .2s; }
+  .fdp-opt:has(input:checked) { border-color: #111111; }
+  .fdp-opt input { accent-color: #111111; width: 18px; height: 18px; flex: none; }
+  .fdp-opt-txt { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .fdp-opt-txt strong { font-size: 14px; font-weight: 600; }
+  .fdp-opt-txt small { font-size: 12px; color: #666666; line-height: 1.4; }
+  .fdp-opt-price { font-weight: 700; font-size: 15px; white-space: nowrap; }
+  .fdp-counter { display: inline-flex; align-items: center; border: 1.5px solid #111111; border-radius: 999px; overflow: hidden; }
+  .fdp-counter button { width: 46px; height: 44px; font-size: 20px; background: transparent; color: #111111; cursor: pointer; }
+  .fdp-counter button:hover { background: #f2f2f2; }
+  .fdp-counter output { min-width: 44px; text-align: center; font-weight: 700; font-size: 17px; }
+  .fdp-hint { font-size: 12px; color: #777777; margin: 8px 0 0; line-height: 1.5; }
+  .fdp-input { width: 100%; border: 1.5px solid #e2e2e2; border-radius: 14px; padding: 12px 14px; font: inherit; color: #111111; background: #ffffff; }
+  .fdp-input:focus { outline: none; border-color: #111111; }
+  .fdp-total { display: flex; justify-content: space-between; align-items: center; background: #f6f6f6; border-radius: 16px; padding: 14px 16px; margin: 20px 0 14px; }
+  .fdp-total span { font-size: 13px; color: #555555; }
+  .fdp-total strong { font-size: 22px; font-weight: 700; }
+  .fdp-btn-wa { width: 100%; background: #25D366; border-color: #25D366; color: #ffffff; }
+  .fdp-btn-wa svg { width: 20px; height: 20px; }
+  .fdp-full { margin-top: 20px; }
+  .fdp-full p { color: #555555; margin-bottom: 16px; }
+
+  @media (max-width: 900px) { .fdp-steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 767px) {
+    .fdp-hero { flex-direction: column-reverse; min-height: 0; }
+    .fdp-hero-photo { min-height: 0; height: 58vh; max-height: 460px; flex: none; }
+    .fdp-hero-text { padding: 28px 22px 36px; }
+    .fdp-br { display: none; }
+    .fdp-title { font-size: 3.3rem; margin-bottom: 14px; }
+    .fdp-lead { font-size: 14.5px; }
+    .fdp-actions { max-width: none; }
+    .fdp-section { padding-top: 52px; }
+    .fdp-steps { grid-template-columns: 1fr; }
+    .fdp-detail { grid-template-columns: 1fr; }
+    .fdp-gal { max-height: none; border-radius: 22px 22px 0 0; grid-auto-flow: column; grid-auto-columns: 78%; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; }
+    .fdp-gal-img { scroll-snap-align: start; height: 52vh; object-fit: cover; }
+    .fdp-gal-ph { min-height: 200px; }
+    .fdp-info { padding: 22px 20px 26px; }
+    .fdp-model { font-size: 24px; }
+    .fdp-modal { padding: 8px; align-items: flex-end; }
+    .fdp-modal-card { max-height: calc(100vh - 16px); border-radius: 22px; }
+    .fdp-x { position: absolute; top: 12px; right: 12px; margin: 0; float: none; }
+    .fdp-final { margin: 56px 16px 72px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .fdp-price { animation: none; } }
+</style>
+
+<script is:inline>
+  (function () {
+    function init() {
+      var modal = document.getElementById('fdp-modal');
+      var raw = document.getElementById('fdp-data');
+      if (!modal || !raw || modal.dataset.ready) return;
+      modal.dataset.ready = '1';
+      var D = JSON.parse(raw.textContent || '{}');
+      var fmt = function (n) { return '$' + Number(n).toLocaleString('es-AR'); };
+
+      function actualizar(form) {
+        var j = D.jornadas[form.getAttribute('data-form')];
+        var sel = form.querySelector('input[type=radio]:checked');
+        var pack = D.packs[sel ? Number(sel.value) : 0] || {};
+        var looks = Number(form.querySelector('[data-looks]').textContent) || 1;
+        var marca = (form.querySelector('[data-marca]').value || '').trim();
+        var total = pack.precio ? fmt(pack.precio * looks) : 'A confirmar';
+        form.querySelector('[data-total]').textContent = total;
+        var msg = '¡Hola Ciava! Quiero reservar mi lugar en el Flash Day 📸\n\n' +
+          '📅 Fecha: ' + j.texto + (j.horario ? ' (' + j.horario + ')' : '') + '\n' +
+          '👤 Modelo: ' + j.modelo + '\n' +
+          '📦 Pack: ' + (pack.nombre || '') + '\n' +
+          '👗 Looks: ' + looks + '\n' +
+          '💰 Total estimado: ' + total + '\n' +
+          '🏷️ Marca: ' + (marca || '(completar)') + '\n\n' +
+          'ACEPTO ' + (marca || '[nombre de mi marca]');
+        form.querySelector('[data-reservar]').href = 'https://wa.me/' + D.numero + '?text=' + encodeURIComponent(msg);
+      }
+
+      modal.querySelectorAll('[data-form]').forEach(function (form) {
+        form.addEventListener('change', function () { actualizar(form); });
+        form.addEventListener('input', function () { actualizar(form); });
+        form.querySelectorAll('[data-step]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var out = form.querySelector('[data-looks]');
+            var n = Math.max(1, Math.min(99, (Number(out.textContent) || 1) + Number(b.getAttribute('data-step'))));
+            out.textContent = String(n);
+            actualizar(form);
+          });
+        });
+        actualizar(form);
+      });
+
+      function abrir(i) {
+        modal.querySelectorAll('.fdp-detail').forEach(function (d) { d.hidden = d.getAttribute('data-j') !== String(i); });
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        var card = modal.querySelector('.fdp-modal-card'); if (card) card.scrollTop = 0;
+      }
+      function cerrar() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+      document.querySelectorAll('[data-open]').forEach(function (c) {
+        c.addEventListener('click', function () { abrir(c.getAttribute('data-open')); });
+      });
+      modal.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', cerrar); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('is-open')) cerrar(); });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  })();
+</script>

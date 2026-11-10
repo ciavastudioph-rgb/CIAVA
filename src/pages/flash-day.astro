@@ -61,6 +61,26 @@ const jornadas = (data.jornadas as any[])
   .filter((j) => j.dt >= hoy)
   .sort((a, b) => a.dt.getTime() - b.dt.getTime());
 
+// Carrusel "Marcas que confiaron": fotos en src/assets/images/flashday/marcas/ y videos en src/assets/videos/flashday/
+// (si todavía no hay nada ahí, se usan fotos del portfolio).
+type Muestra = { tipo: 'foto'; img: ImageMetadata } | { tipo: 'video'; src: string };
+const fotosMarcas = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/flashday/marcas/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const videosMarcas = import.meta.glob<string>('/src/assets/videos/flashday/*.{mp4,MP4,webm,WEBM,mov,MOV}', { eager: true, query: '?url', import: 'default' });
+const fotosPortfolio = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/portfolio/**/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const soloFotos: Muestra[] = Object.values(fotosMarcas).map((m) => ({ tipo: 'foto' as const, img: m.default }));
+const soloVideos: Muestra[] = Object.values(videosMarcas).map((src) => ({ tipo: 'video' as const, src }));
+let muestras: Muestra[] = [];
+const maxLen = Math.max(soloFotos.length, soloVideos.length * 3);
+for (let k = 0, f = 0, vv = 0; k < maxLen + soloVideos.length; k++) {
+  if ((k + 1) % 4 === 0 && vv < soloVideos.length) muestras.push(soloVideos[vv++]);
+  else if (f < soloFotos.length) muestras.push(soloFotos[f++]);
+  else if (vv < soloVideos.length) muestras.push(soloVideos[vv++]);
+}
+if (muestras.length === 0) {
+  muestras = Object.values(fotosPortfolio).slice(0, 14).map((m) => ({ tipo: 'foto' as const, img: m.default }));
+}
+const duracion = Math.max(45, muestras.length * 7);
+
 const datosCliente = {
   numero,
   packs,
@@ -111,6 +131,25 @@ const datosCliente = {
         <li><span>04</span><h3>Recibís tu contenido</h3><p>Tus fotos editadas en 72 hs (y el video, si elegiste Foto &amp; Video).</p></li>
       </ol>
     </section>
+
+    <!-- MARCAS QUE CONFIARON (carrusel) -->
+    {muestras.length > 0 && (
+      <section class="fdp-marcas">
+        <h2 class="fdp-h2">MARCAS QUE CONFIARON</h2>
+        <p class="fdp-sub">Hoy tienen este material. El próximo puede ser el tuyo.</p>
+        <div class="fdp-marquee">
+          <div class="fdp-track" style={`--dur: ${duracion}s`}>
+            {[...muestras, ...muestras].map((m, k) => (
+              m.tipo === 'foto' ? (
+                <Image src={m.img} alt={k < muestras.length ? 'Contenido de una marca en un Flash Day de CIAVA' : ''} widths={[300, 520]} sizes="260px" class="fdp-m-item" loading="lazy" decoding="async" quality={70} />
+              ) : (
+                <video class="fdp-m-item" src={m.src} autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+              )
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
 
     <!-- PRÓXIMAS FECHAS -->
     <section id="fechas" class="fdp-section fdp-fechas">
@@ -389,6 +428,18 @@ const datosCliente = {
   .fdp-extra .fdp-eyebrow { margin-bottom: 8px; color: #111111; }
   .fdp-hint-top { margin: -4px 0 10px; }
   .fdp-opc { font-weight: 400; letter-spacing: .04em; color: #777777; }
+
+  /* Carrusel marcas */
+  .fdp-marcas { padding: 72px 0 8px; overflow: hidden; }
+  .fdp-marcas .fdp-sub { margin-bottom: 28px; }
+  .fdp-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+  .fdp-track { display: flex; width: max-content; animation: fdpMarquee var(--dur, 60s) linear infinite; }
+  .fdp-marquee:hover .fdp-track { animation-play-state: paused; }
+  .fdp-m-item { flex: none; height: 360px; width: auto; max-width: none; margin-right: 14px; border-radius: 18px; object-fit: cover; background: #f2f2f2; }
+  video.fdp-m-item { aspect-ratio: 9 / 16; }
+  @keyframes fdpMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (max-width: 767px) { .fdp-marcas { padding-top: 52px; } .fdp-m-item { height: 250px; margin-right: 10px; border-radius: 14px; } }
+  @media (prefers-reduced-motion: reduce) { .fdp-track { animation: none; } .fdp-marquee { overflow-x: auto; } }
 
   @media (max-width: 900px) { .fdp-steps { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 767px) {

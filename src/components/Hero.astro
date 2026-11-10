@@ -11,7 +11,8 @@ const heroMobile = resolveImageWarn(hero.imageMobile, 'hero — celular');
 const heroDesktop = resolveImageWarn(hero.imageDesktop, 'hero — escritorio');
 ---
 
-<section id="hero" class="relative min-h-screen w-full overflow-hidden bg-ciava-black">
+<!-- La portada queda oscura (foto + logo blanco) aunque el resto del sitio sea claro -->
+<section id="hero" class="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a]">
   <!-- Imagen mobile (vertical) - visible solo en mobile/tablet -->
   <div class="absolute inset-0 md:hidden">
     {heroMobile && (
@@ -47,7 +48,7 @@ const heroDesktop = resolveImageWarn(hero.imageDesktop, 'hero — escritorio');
   </div>
 
   <!-- Overlays (compartidos) -->
-  <div class="absolute inset-0 bg-gradient-to-b from-ciava-black/60 via-ciava-black/15 to-ciava-black/85"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/60 via-[#0a0a0a]/15 to-[#0a0a0a]/85"></div>
   <!-- Refuerzo de legibilidad detrás del logo -->
   <div class="absolute inset-0" style="background: radial-gradient(ellipse 60% 45% at center 48%, rgba(10,10,10,0.55) 0%, transparent 70%);"></div>
   <!-- Viñeta envolvente -->
@@ -56,7 +57,7 @@ const heroDesktop = resolveImageWarn(hero.imageDesktop, 'hero — escritorio');
   <!-- Contenido centrado -->
   <div class="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-20">
     <!-- Pequeño acento dorado -->
-    <div class="mb-6 sm:mb-8 h-8 w-px bg-gradient-to-b from-transparent via-ciava-gold/60 to-transparent"></div>
+    <div class="mb-6 sm:mb-8 h-8 w-px bg-gradient-to-b from-transparent via-[#ffffff]/60 to-transparent"></div>
 
     <!-- Logo CIAVA Studio -->
     <h1 class="hero-logo mb-6 sm:mb-8">
@@ -68,20 +69,20 @@ const heroDesktop = resolveImageWarn(hero.imageDesktop, 'hero — escritorio');
 
     <p
       id="hero-subtitle"
-      class="hero-subtitle max-w-xs text-center text-[10px] font-light tracking-[0.2em] text-white/70 sm:max-w-md sm:text-xs sm:tracking-[0.25em] md:max-w-lg md:text-sm"
+      class="hero-subtitle max-w-xs text-center text-[10px] font-light tracking-[0.2em] text-[#ffffff]/70 sm:max-w-md sm:text-xs sm:tracking-[0.25em] md:max-w-lg md:text-sm"
     >
       {hero.subtitle}
     </p>
 
     <!-- Pequeño acento dorado -->
-    <div class="mt-6 sm:mt-8 h-8 w-px bg-gradient-to-b from-ciava-gold/40 via-transparent to-transparent"></div>
+    <div class="mt-6 sm:mt-8 h-8 w-px bg-gradient-to-b from-[#ffffff]/40 via-transparent to-transparent"></div>
   </div>
 
   <!-- Scroll indicator -->
   <div class="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 sm:bottom-12">
     <div class="flex flex-col items-center gap-2 animate-pulse-soft">
-      <span class="text-[9px] font-light tracking-[0.3em] text-ciava-gold/50 sm:text-[10px]">SCROLL</span>
-      <svg class="h-4 w-4 text-ciava-gold/40 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <span class="text-[9px] font-light tracking-[0.3em] text-[#ffffff]/50 sm:text-[10px]">SCROLL</span>
+      <svg class="h-4 w-4 text-[#ffffff]/40 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
       </svg>
     </div>

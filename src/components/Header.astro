@@ -5,7 +5,7 @@
  */
 ---
 
-<header id="header" class="fixed top-0 z-50 w-full transition-all duration-500">
+<header id="header" class="fixed top-0 z-50 w-full bg-ciava-black/95 backdrop-blur-md border-b border-white/5 transition-all duration-500">
   <div class="container mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-5 md:py-6">
     <nav class="flex items-center justify-between" aria-label="Navegación principal">
       <!-- Logo -->
@@ -154,7 +154,7 @@
       if (currentScroll > 80) {
         header.classList.add('bg-ciava-black/90', 'backdrop-blur-md', 'border-b', 'border-white/5');
       } else {
-        header.classList.remove('bg-ciava-black/90', 'backdrop-blur-md', 'border-b', 'border-white/5');
+        // Tema claro: el header queda siempre con fondo blanco
       }
 
       lastScroll = currentScroll;

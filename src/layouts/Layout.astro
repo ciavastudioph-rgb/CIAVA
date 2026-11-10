@@ -23,6 +23,7 @@ const {
 	keywords = 'fotografía moda, producción editorial, video moda, estilismo, polas modelos, fotografía producto, ciava studio, fotógrafa buenos aires, estudio fotográfico nordelta, contenido visual marcas',
 	type = 'website',
 } = Astro.props;
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 ---
 
 <!doctype html>
@@ -154,7 +155,8 @@ const {
 		<main>
 			<slot />
 		</main>
-	</body>
+	  <WhatsAppFloat />
+  </body>
 </html>
 
 <style is:global>

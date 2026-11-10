@@ -6,7 +6,7 @@
 
 backend:
   name: github
-  repo: FrancoGaggero/CIAVA
+  repo: ciavastudioph-rgb/CIAVA
   branch: main
 
 # Modo local: al abrir /admin en localhost, el panel puede trabajar directamente con

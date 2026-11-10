@@ -22,8 +22,8 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #0a0a0a;
-    color: #faf8f5;
+    background-color: #ffffff;
+    color: #111111;
   }
 
   * {
@@ -49,8 +49,8 @@
 
   /* Typography refinements */
   h1, h2, h3, h4 {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    font-weight: 300;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 700;
     letter-spacing: 0.08em;
     /* Saltos de línea más equilibrados en títulos */
     text-wrap: balance;
@@ -72,7 +72,7 @@
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible {
-    outline: 1px solid rgba(201, 169, 110, 0.75);
+    outline: 1px solid rgba(17, 17, 17, 0.75);
     outline-offset: 4px;
     border-radius: 1px;
   }
@@ -84,8 +84,8 @@
 
   /* Selection color */
   ::selection {
-    background: rgba(201, 169, 110, 0.3);
-    color: #faf8f5;
+    background: #111111;
+    color: #ffffff;
   }
 
   /* Scrollbar styling */
@@ -93,14 +93,14 @@
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0a0a0a;
+    background: #ffffff;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a2a2a;
+    background: #cccccc;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3a3a3a;
+    background: #999999;
   }
 }
 
@@ -119,22 +119,28 @@
   /* Decorative line */
   .line-accent {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(17, 17, 17, 0.4), transparent);
   }
 
   /* Gold accent text */
   .text-accent {
-    color: #c9a96e;
+    color: #111111;
   }
 
   /* Smooth section transitions */
   .section-dark {
-    background-color: #0a0a0a;
+    background-color: #ffffff;
   }
   .section-elevated {
-    background-color: #141414;
+    background-color: #f6f6f6;
   }
   .section-light {
-    background-color: #1a1a1a;
+    background-color: #efefef;
   }
+}
+
+/* Tema claro: títulos en Helvetica bold */
+h1, h2, h3, h4 {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+  font-weight: 700 !important;
 }

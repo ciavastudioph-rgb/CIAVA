@@ -23,6 +23,18 @@ const fotos = import.meta.glob<{ default: ImageMetadata }>(
 );
 const foto = Object.values(fotos)[0]?.default ?? null;
 
+// Pasan mezclados: la foto principal + videos (src/assets/videos/flashday/) + fotos de marcas (src/assets/images/flashday/marcas/)
+type Slide = { tipo: 'foto'; img: ImageMetadata } | { tipo: 'video'; src: string };
+const videosPopup = import.meta.glob<string>('/src/assets/videos/flashday/*.{mp4,MP4,webm,WEBM,mov,MOV}', { eager: true, query: '?url', import: 'default' });
+const fotosMarcasPopup = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/flashday/marcas/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const vids: Slide[] = Object.values(videosPopup).slice(0, 3).map((src) => ({ tipo: 'video' as const, src }));
+const extras: Slide[] = Object.values(fotosMarcasPopup).slice(0, 3).map((m) => ({ tipo: 'foto' as const, img: m.default }));
+const slides: Slide[] = foto ? [{ tipo: 'foto', img: foto }] : [];
+for (let k = 0; k < Math.max(vids.length, extras.length); k++) {
+  if (vids[k]) slides.push(vids[k]);
+  if (extras[k]) slides.push(extras[k]);
+}
+
 const numero = (settings.contact.whatsapp || '').replace(/[^\d]/g, '');
 const waLink = (msg: string) => `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
 const linkPersonalizado = waLink('¡Hola Ciava! Quiero algo personalizado para mi marca, ¿me cotizan? 😊');
@@ -56,9 +68,15 @@ const linkPersonalizado = waLink('¡Hola Ciava! Quiero algo personalizado para m
         </div>
       </div>
 
-      {foto && (
-        <div class="fd-photo">
-          <Image src={foto} alt="Modelo en una jornada de Flash Day de Ciava Studio" widths={[480, 800]} sizes="(max-width: 767px) 92vw, 400px" class="fd-img" loading="lazy" decoding="async" quality={80} />
+      {slides.length > 0 && (
+        <div class="fd-photo" data-fd-slides>
+          {slides.map((s, k) => (
+            s.tipo === 'foto' ? (
+              <Image src={s.img} alt={k === 0 ? 'Modelo en una jornada de Flash Day de Ciava Studio' : ''} widths={[480, 800]} sizes="(max-width: 767px) 92vw, 400px" class={`fd-img fd-slide ${k === 0 ? 'is-on' : ''}`} loading="lazy" decoding="async" quality={80} />
+            ) : (
+              <video class="fd-img fd-slide" src={s.src} muted playsinline loop preload="metadata" aria-hidden="true"></video>
+            )
+          ))}
         </div>
       )}
     </div>
@@ -74,6 +92,8 @@ const linkPersonalizado = waLink('¡Hola Ciava! Quiero algo personalizado para m
   .fd-text { flex: 1 1 56%; padding: 48px 44px; color: #111111; display: flex; flex-direction: column; justify-content: center; }
   .fd-photo { flex: 0 0 44%; position: relative; min-height: 500px; }
   .fd-img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 20%; }
+  .fd-slide { opacity: 0; transition: opacity .9s ease; }
+  .fd-slide.is-on { opacity: 1; }
   .fd-close { position: absolute; top: 14px; right: 14px; z-index: 2; width: 38px; height: 38px; min-width: 38px; min-height: 38px; border-radius: 999px; background: #ffffff; color: #111111; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,.18); cursor: pointer; transition: transform .2s; }
   .fd-close:hover { transform: scale(1.06); }
   .fd-eyebrow { font-size: 11px; letter-spacing: .3em; margin: 0 0 10px; color: #111111; }
@@ -125,8 +145,20 @@ const linkPersonalizado = waLink('¡Hola Ciava! Quiero algo personalizado para m
       try { visto = sessionStorage.getItem(KEY) === '1'; } catch (e) {}
       if (location.search.indexOf('flashday') > -1) visto = false;
       function marcar() { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} }
-      function abrir() { el.classList.add('is-open'); el.setAttribute('aria-hidden', 'false'); }
-      function cerrar() { el.classList.remove('is-open'); el.setAttribute('aria-hidden', 'true'); marcar(); }
+      var slides = el.querySelectorAll('.fd-slide');
+      var actual = 0, timer = null;
+      function mostrar(i) {
+        slides.forEach(function (s, k) {
+          var on = k === i;
+          s.classList.toggle('is-on', on);
+          if (s.tagName === 'VIDEO') { if (on) { try { s.currentTime = 0; s.play(); } catch (e) {} } else { s.pause(); } }
+        });
+        actual = i;
+      }
+      function arrancar() { if (slides.length < 2 || timer) return; mostrar(0); timer = setInterval(function () { mostrar((actual + 1) % slides.length); }, 3500); }
+      function parar() { if (timer) { clearInterval(timer); timer = null; } slides.forEach(function (s) { if (s.tagName === 'VIDEO') s.pause(); }); }
+      function abrir() { el.classList.add('is-open'); el.setAttribute('aria-hidden', 'false'); arrancar(); }
+      function cerrar() { el.classList.remove('is-open'); el.setAttribute('aria-hidden', 'true'); marcar(); parar(); }
       el.querySelectorAll('[data-fd-close]').forEach(function (b) { b.addEventListener('click', cerrar); });
       el.querySelectorAll('[data-fd-seen]').forEach(function (a) { a.addEventListener('click', marcar); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && el.classList.contains('is-open')) cerrar(); });

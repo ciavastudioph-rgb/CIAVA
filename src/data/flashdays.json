@@ -1,0 +1,34 @@
+{
+  "packs": [
+    {
+      "nombre": "Pack Foto",
+      "precio": 50000,
+      "unidad": "por look",
+      "descripcion": "10 fotos editadas por look + video recopilado de la jornada con tus prendas en uso."
+    },
+    {
+      "nombre": "Pack Foto + Reel",
+      "precio": null,
+      "unidad": "por look",
+      "descripcion": "Todo lo del Pack Foto + reel editado con música y texto, listo para subir."
+    }
+  ],
+  "jornadas": [
+    {
+      "fecha": "2026-11-28",
+      "horario": "10 a 16 hs",
+      "modelo": "Modelo de ejemplo",
+      "instagram": "@ciavastudio",
+      "estado": "disponible",
+      "fotos": ["/src/assets/images/flashday/7L3A3933.jpg"]
+    },
+    {
+      "fecha": "2026-12-12",
+      "horario": "10 a 16 hs",
+      "modelo": "Otra modelo de ejemplo",
+      "instagram": "",
+      "estado": "ultimos",
+      "fotos": []
+    }
+  ]
+}

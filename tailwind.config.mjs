@@ -4,7 +4,7 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+				sans: ['Poppins', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
 				serif: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
 			},
 			colors: {

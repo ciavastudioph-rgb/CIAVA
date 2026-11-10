@@ -4,19 +4,22 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['Inter', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
-				serif: ['Cormorant Garamond', 'Georgia', 'Times New Roman', 'serif'],
+				sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+				serif: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
 			},
 			colors: {
+				// Tema claro: fondo blanco, texto negro
+				'white': '#111111',
+				'black': '#ffffff',
 				'ciava': {
-					'black': '#0a0a0a',
-					'dark': '#141414',
-					'charcoal': '#1a1a1a',
-					'graphite': '#2a2a2a',
-					'warm': '#f5f0eb',
-					'cream': '#faf8f5',
-					'gold': '#c9a96e',
-					'gold-light': '#d4b87a',
+					'black': '#ffffff',
+					'dark': '#f6f6f6',
+					'charcoal': '#efefef',
+					'graphite': '#e2e2e2',
+					'warm': '#111111',
+					'cream': '#111111',
+					'gold': '#111111',
+					'gold-light': '#333333',
 				},
 			},
 			boxShadow: {

@@ -33,6 +33,8 @@ hoy.setHours(0, 0, 0, 0);
 type Pack = { nombre: string; precio: number | null; unidad?: string; descripcion?: string };
 const packs: Pack[] = data.packs as Pack[];
 const precio = (n: number | null) => (n ? '$' + n.toLocaleString('es-AR') : 'Consultar');
+type Extra = { nombre: string; precio: number | null; descripcion?: string };
+const extra: Extra | null = ((data as any).extra as Extra) ?? null;
 const desdePrecio = packs.map((p) => p.precio).filter((n): n is number => !!n).sort((a, b) => a - b)[0] ?? null;
 
 const ESTADOS: Record<string, { texto: string; clase: string }> = {
@@ -62,6 +64,7 @@ const jornadas = (data.jornadas as any[])
 const datosCliente = {
   numero,
   packs,
+  extra,
   jornadas: Object.fromEntries(jornadas.map((j) => [j.i, { texto: `${j.dia} ${j.num} ${j.mes}`, modelo: j.modelo, horario: j.horario || '' }])),
 };
 ---
@@ -105,7 +108,7 @@ const datosCliente = {
         <li><span>01</span><h3>Elegís tu fecha</h3><p>Mirá las próximas jornadas y la modelo de cada una.</p></li>
         <li><span>02</span><h3>Reservás tu lugar</h3><p>Nos escribís por WhatsApp, confirmás con <strong>ACEPTO + el nombre de tu marca</strong> y te pasamos los datos de transferencia.</p></li>
         <li><span>03</span><h3>Mandás tus productos</h3><p>Todo en una caja cerrada, sí o sí el día anterior a la jornada.</p></li>
-        <li><span>04</span><h3>Recibís tu contenido</h3><p>Fotos editadas en 72 hs + un video recopilado con tus prendas en uso.</p></li>
+        <li><span>04</span><h3>Recibís tu contenido</h3><p>Tus fotos editadas en 72 hs (y el video, si elegiste Foto &amp; Video).</p></li>
       </ol>
     </section>
 
@@ -145,6 +148,7 @@ const datosCliente = {
     <!-- PACKS -->
     <section class="fdp-section">
       <h2 class="fdp-h2">PACKS</h2>
+      <p class="fdp-sub">Elegís uno de los dos y aplica a todos los looks de tu marca.</p>
       <div class="fdp-packs">
         {packs.map((p) => (
           <div class="fdp-pack-card">
@@ -154,6 +158,16 @@ const datosCliente = {
           </div>
         ))}
       </div>
+      {extra && (
+        <div class="fdp-extra">
+          <div>
+            <p class="fdp-eyebrow">EXTRA · SE CONTRATA APARTE</p>
+            <h3>{extra.nombre}</h3>
+            <p>{extra.descripcion}</p>
+          </div>
+          <p class="fdp-pack-price">{precio(extra.precio)}</p>
+        </div>
+      )}
     </section>
 
     <!-- CONDICIONES -->
@@ -211,6 +225,7 @@ const datosCliente = {
             ) : (
               <div class="fdp-form" data-form={j.i}>
                 <p class="fdp-label">1. Elegí tu pack</p>
+                <p class="fdp-hint fdp-hint-top">Es uno u otro: el pack que elijas aplica a todos tus looks.</p>
                 {packs.map((p, k) => (
                   <label class="fdp-opt">
                     <input type="radio" name={`pack-${j.i}`} value={k} checked={k === 0} />
@@ -225,7 +240,17 @@ const datosCliente = {
                   <button type="button" data-step="1" aria-label="Más looks">+</button>
                 </div>
                 <p class="fdp-hint">Cada look = hasta 2 prendas o 1 accesorio.</p>
-                <p class="fdp-label">3. Tu marca</p>
+                {extra && (
+                  <>
+                    <p class="fdp-label">3. ¿Sumás un reel editado? <span class="fdp-opc">(opcional, aparte)</span></p>
+                    <label class="fdp-opt">
+                      <input type="checkbox" data-reel />
+                      <span class="fdp-opt-txt"><strong>{extra.nombre}</strong><small>{extra.descripcion}</small></span>
+                      <span class="fdp-opt-price">{precio(extra.precio)}</span>
+                    </label>
+                  </>
+                )}
+                <p class="fdp-label">{extra ? '4' : '3'}. Tu marca</p>
                 <input class="fdp-input" type="text" data-marca placeholder="Nombre de tu marca" autocomplete="organization" />
                 <div class="fdp-total"><span>Total estimado</span><strong data-total>—</strong></div>
                 <a class="fdp-btn fdp-btn-wa" data-reservar href="#" target="_blank" rel="noopener">
@@ -357,6 +382,14 @@ const datosCliente = {
   .fdp-full { margin-top: 20px; }
   .fdp-full p { color: #555555; margin-bottom: 16px; }
 
+  .fdp-extra { margin-top: 16px; border: 1.5px dashed #111111; border-radius: 22px; padding: 24px; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .fdp-extra h3 { font-size: 18px; margin: 0 0 6px; color: #111111; }
+  .fdp-extra p { margin: 0; font-size: 14px; color: #555555; }
+  .fdp-extra .fdp-pack-price { margin: 0; color: #111111; }
+  .fdp-extra .fdp-eyebrow { margin-bottom: 8px; color: #111111; }
+  .fdp-hint-top { margin: -4px 0 10px; }
+  .fdp-opc { font-weight: 400; letter-spacing: .04em; color: #777777; }
+
   @media (max-width: 900px) { .fdp-steps { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 767px) {
     .fdp-hero { flex-direction: column-reverse; min-height: 0; }
@@ -398,13 +431,18 @@ const datosCliente = {
         var pack = D.packs[sel ? Number(sel.value) : 0] || {};
         var looks = Number(form.querySelector('[data-looks]').textContent) || 1;
         var marca = (form.querySelector('[data-marca]').value || '').trim();
-        var total = pack.precio ? fmt(pack.precio * looks) : 'A confirmar';
+        var reelEl = form.querySelector('[data-reel]');
+        var quiereReel = !!(reelEl && reelEl.checked);
+        var ex = D.extra || {};
+        var base = pack.precio ? pack.precio * looks : null;
+        var total = base === null ? 'A confirmar' : (quiereReel && ex.precio ? fmt(base + ex.precio) : fmt(base) + (quiereReel ? ' + reel' : ''));
         form.querySelector('[data-total]').textContent = total;
         var msg = '¡Hola Ciava! Quiero reservar mi lugar en el Flash Day 📸\n\n' +
           '📅 Fecha: ' + j.texto + (j.horario ? ' (' + j.horario + ')' : '') + '\n' +
           '👤 Modelo: ' + j.modelo + '\n' +
           '📦 Pack: ' + (pack.nombre || '') + '\n' +
           '👗 Looks: ' + looks + '\n' +
+          (D.extra ? '🎬 Reel editado: ' + (quiereReel ? 'Sí, quiero sumarlo' : 'No') + '\n' : '') +
           '💰 Total estimado: ' + total + '\n' +
           '🏷️ Marca: ' + (marca || '(completar)') + '\n\n' +
           'ACEPTO ' + (marca || '[nombre de mi marca]');

@@ -12,7 +12,7 @@ const heroDesktop = resolveImageWarn(hero.imageDesktop, 'hero — escritorio');
 ---
 
 <!-- La portada queda oscura (foto + logo blanco) aunque el resto del sitio sea claro -->
-<section id="hero" class="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a]">
+<section id="hero" class="relative mt-[76px] md:mt-[92px] min-h-[calc(100vh-76px)] md:min-h-[calc(100vh-92px)] w-full overflow-hidden bg-[#0a0a0a]">
   <!-- Imagen mobile (vertical) - visible solo en mobile/tablet -->
   <div class="absolute inset-0 md:hidden">
     {heroMobile && (
@@ -55,7 +55,7 @@ const heroDesktop = resolveImageWarn(hero.imageDesktop, 'hero — escritorio');
   <div class="absolute inset-0" style="background: radial-gradient(ellipse at center, transparent 45%, rgba(10,10,10,0.7) 100%);"></div>
 
   <!-- Contenido centrado -->
-  <div class="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-20">
+  <div class="relative z-10 flex min-h-[calc(100vh-76px)] md:min-h-[calc(100vh-92px)] flex-col items-center justify-center px-6 py-20">
     <!-- Pequeño acento dorado -->
     <div class="mb-6 sm:mb-8 h-8 w-px bg-gradient-to-b from-transparent via-[#ffffff]/60 to-transparent"></div>
 

@@ -94,7 +94,7 @@ const datosCliente = {
 
 <Layout
   title="Flash Day | Jornadas de fotos compartidas para marcas | CIAVA Studio"
-  description="Flash Day de CIAVA Studio: una modelo, un estudio, varias marcas. Sumá tus looks a la próxima jornada en Nordelta y recibí tus fotos editadas en 72 hs."
+  description="Flash Day de CIAVA Studio: una modelo, un estudio, varias marcas. Sumá tus looks a la próxima jornada en Nordelta y recibí tus fotos editadas en 5 días hábiles."
   keywords="flash day, fotos para marcas, fotografía de moda económica, jornada compartida, fotos con modelo, estudio nordelta, contenido para tienda online"
 >
   <div class="fdp">
@@ -107,7 +107,7 @@ const datosCliente = {
         <p class="fdp-lead">
           <strong>Una modelo, un estudio, varias marcas.</strong><br />
           Sumá tus looks a la próxima jornada<br />
-          y recibí tus fotos editadas en <strong class="fdp-u">72 hs</strong>.
+          y recibí tus fotos editadas en <strong class="fdp-u">5 días hábiles</strong> (igual, casi siempre te las mandamos antes 😉).
         </p>
         {desdePrecio && (
           <p class="fdp-price-row">desde <span class="fdp-price">{precio(desdePrecio)}</span> <strong class="fdp-u">por look</strong></p>
@@ -129,9 +129,9 @@ const datosCliente = {
       <h2 class="fdp-h2">¿CÓMO FUNCIONA?</h2>
       <ol class="fdp-steps">
         <li><span>01</span><h3>Elegís tu fecha</h3><p>Mirá las próximas jornadas y la modelo de cada una.</p></li>
-        <li><span>02</span><h3>Reservás tu lugar</h3><p>Nos escribís por WhatsApp, confirmás con <strong>ACEPTO + el nombre de tu marca</strong> y te pasamos los datos de transferencia.</p></li>
-        <li><span>03</span><h3>Mandás tus productos</h3><p>Todo en una caja cerrada, sí o sí el día anterior a la jornada.</p></li>
-        <li><span>04</span><h3>Recibís tu contenido</h3><p>Tus fotos editadas en 72 hs (y el video, si elegiste Foto &amp; Video).</p></li>
+        <li><span>02</span><h3>Reservás tu lugar</h3><p>Nos escribís por WhatsApp y te pasamos los datos de transferencia.</p></li>
+        <li><span>03</span><h3>Mandás tus productos</h3><p>En estas jornadas nos manejamos con envíos, ya que son muchas marcas en un mismo día: no podemos recibir a todo el equipo.</p></li>
+        <li><span>04</span><h3>Recibís tu contenido</h3><p>Tus fotos editadas en 5 días hábiles (igual, casi siempre te las mandamos antes 😉) y el video, si elegiste Foto &amp; Video.</p></li>
       </ol>
     </section>
 
@@ -182,7 +182,7 @@ const datosCliente = {
               </div>
               <div class="fdp-card-body">
                 <span class={`fdp-chip ${j.estado.clase}`}>{j.estado.texto}</span>
-                <h3>{j.modelo}</h3>
+                <h3>MODELO: {j.modelo}</h3>
                 {j.horario && <p>{j.horario}</p>}
                 <span class="fdp-more">{j.completo ? 'Ver jornada' : 'Ver y reservar'} →</span>
               </div>
@@ -205,11 +205,12 @@ const datosCliente = {
         {packs.map((p) => (
           <div class="fdp-pack-card">
             <h3>{p.nombre}</h3>
-            <p class="fdp-pack-price">{precio(p.precio)} {p.precio && p.unidad && <small>{p.unidad}</small>}</p>
+            
             {p.descripcion && <p>{p.descripcion}</p>}
           </div>
         ))}
       </div>
+      <p class="fdp-packs-note">El valor exacto depende de la fecha — <a href="#fechas">entrá a la jornada que te interesa</a> para verlo.</p>
       {extra && (
         <div class="fdp-extra">
           <div>
@@ -235,10 +236,10 @@ const datosCliente = {
       <h2 class="fdp-h2">A TENER EN CUENTA</h2>
       <ul class="fdp-cond">
         <li>Cada look incluye hasta dos prendas (por ejemplo, arriba y abajo). Con accesorios es igual: un bolso es un look.</li>
-        <li>Los productos se entregan en una caja cerrada, sí o sí el día anterior a la jornada.</li>
+        <li>Los productos se reciben hasta 24 hs antes del shooting.</li>
         <li>Incluye una ronda de ajustes básicos (luz, foco, detalles). Los cambios extra se cobran aparte.</li>
         <li>Las fotos no se pueden modificar con IA para crear otras variantes: cada producto o color cuenta como un look.</li>
-        <li>Todas las aclaraciones en un solo mensaje escrito, sin audios.</li>
+        <li>Todas las aclaraciones en un solo mensaje escrito.</li>
       </ul>
     </section>
 
@@ -268,7 +269,7 @@ const datosCliente = {
           </div>
           <div class="fdp-info">
             <p class="fdp-eyebrow">FLASH DAY · {j.dia} {j.num} {j.mes}{j.horario ? ` · ${j.horario}` : ''}</p>
-            <h3 class="fdp-model">{j.modelo}</h3>
+            <h3 class="fdp-model">MODELO: {j.modelo}</h3>
             {j.ig && (
               <a class="fdp-ig" href={`https://www.instagram.com/${j.ig}/`} target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>
@@ -412,6 +413,8 @@ const datosCliente = {
   .fdp-pack-price { font-size: 26px; font-weight: 700; margin: 0 0 10px; color: #111111; }
   .fdp-pack-price small { font-size: 13px; font-weight: 500; color: #555555; }
   .fdp-pack-card p:last-child { font-size: 14px; color: #555555; line-height: 1.55; margin: 0; }
+.fdp-packs-note { text-align: center; font-size: 13px; color: #777777; margin: 18px 0 0; }
+.fdp-packs-note a { color: #111111; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
 
   /* Condiciones */
   .fdp-cond { max-width: 760px; margin: 24px auto 0; padding: 0; list-style: none; display: grid; gap: 10px; }
@@ -562,8 +565,8 @@ const datosCliente = {
           '👗 Looks: ' + looks + '\n' +
           (D.extra ? '🎬 Reel editado: ' + (quiereReel ? 'Sí, quiero sumarlo' : 'No') + '\n' : '') +
           '💰 Total estimado: ' + total + '\n' +
-          '🏷️ Marca: ' + (marca || '(completar)') + '\n\n' +
-          'ACEPTO ' + (marca || '[nombre de mi marca]');
+          '🏷️ Marca: ' + (marca || '(completar)');
+          
         form.querySelector('[data-reservar]').href = 'https://wa.me/' + D.numero + '?text=' + encodeURIComponent(msg);
       }
 

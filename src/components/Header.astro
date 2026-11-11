@@ -3,6 +3,13 @@
  * Header Component
  * Navegación principal con animaciones elegantes
  */
+const currentPath = Astro.url.pathname;
+const isActive = (href) => {
+  const path = href.split('#')[0];
+  if (path === '/') return currentPath === '/';
+  if (path === '') return false;
+  return currentPath === path || currentPath === path + '/';
+};
 ---
 
 <header id="header" class="fixed top-0 z-50 w-full bg-ciava-black/95 backdrop-blur-md border-b border-white/5 transition-all duration-500">
@@ -19,8 +26,7 @@
       <!-- Desktop Menu -->
       <div class="hidden md:flex items-center gap-10 lg:gap-12">
         <a 
-          href="/trabajos" 
-          class="menu-link group relative text-[13px] font-light tracking-[0.15em] text-white/60 transition-all duration-300 hover:text-white"
+          href="/trabajos" class={`menu-link group relative text-[13px] font-light tracking-[0.15em] transition-all duration-300 hover:text-white ${isActive('/trabajos') ? 'text-white font-semibold' : 'text-white/60'}`}
         >
           <span class="relative">
             PORTFOLIO
@@ -28,8 +34,7 @@
           </span>
         </a>
         <a 
-          href="/flash-day" 
-          class="menu-link group relative text-[13px] font-light tracking-[0.15em] text-white font-semibold transition-all duration-300 hover:text-white"
+          href="/flash-day" class={`menu-link group relative text-[13px] font-light tracking-[0.15em] transition-all duration-300 hover:text-white ${isActive('/flash-day') ? 'text-white font-semibold' : 'text-white/60'}`}
         >
           <span class="relative">
             FLASH DAY
@@ -37,8 +42,7 @@
           </span>
         </a>
 <a
-href="/personalizada"
-class="menu-link group relative text-[13px] font-light tracking-[0.15em] text-white/60 transition-all duration-300 hover:text-white"
+href="/personalizada" class={`menu-link group relative text-[13px] font-light tracking-[0.15em] transition-all duration-300 hover:text-white ${isActive('/personalizada') ? 'text-white font-semibold' : 'text-white/60'}`}
 >
 <span class="relative">
 PERSONALIZADA
@@ -46,8 +50,7 @@ PERSONALIZADA
 </span>
 </a>
         <a 
-          href="/#about" 
-          class="menu-link group relative text-[13px] font-light tracking-[0.15em] text-white/60 transition-all duration-300 hover:text-white"
+          href="/#about" class={`menu-link group relative text-[13px] font-light tracking-[0.15em] transition-all duration-300 hover:text-white ${isActive('/#about') ? 'text-white font-semibold' : 'text-white/60'}`}
         >
           <span class="relative">
             NOSOTROS
@@ -55,8 +58,7 @@ PERSONALIZADA
           </span>
         </a>
         <a 
-          href="/#services" 
-          class="menu-link group relative text-[13px] font-light tracking-[0.15em] text-white/60 transition-all duration-300 hover:text-white"
+          href="/#services" class={`menu-link group relative text-[13px] font-light tracking-[0.15em] transition-all duration-300 hover:text-white ${isActive('/#services') ? 'text-white font-semibold' : 'text-white/60'}`}
         >
           <span class="relative">
             SERVICIOS
@@ -64,8 +66,7 @@ PERSONALIZADA
           </span>
         </a>
         <a 
-          href="/estudio" 
-          class="menu-link group relative text-[13px] font-light tracking-[0.15em] text-white/60 transition-all duration-300 hover:text-white"
+          href="/estudio" class={`menu-link group relative text-[13px] font-light tracking-[0.15em] transition-all duration-300 hover:text-white ${isActive('/estudio') ? 'text-white font-semibold' : 'text-white/60'}`}
         >
           <span class="relative">
             ESTUDIO
@@ -111,38 +112,32 @@ PERSONALIZADA
   <!-- Contenido del menú -->
   <nav class="relative z-10 flex flex-col items-center gap-8 text-center px-6" aria-label="Menú móvil">
     <a 
-      href="/trabajos" 
-      class="mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] text-white/70 transition-all duration-300 hover:text-ciava-gold"
+      href="/trabajos" class={`mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] transition-all duration-300 hover:text-ciava-gold ${isActive('/trabajos') ? 'text-white font-semibold' : 'text-white/70'}`}
     >
       PORTFOLIO
     </a>
     <a 
-      href="/flash-day" 
-      class="mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] text-white font-semibold transition-all duration-300 hover:text-ciava-gold"
+      href="/flash-day" class={`mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] transition-all duration-300 hover:text-ciava-gold ${isActive('/flash-day') ? 'text-white font-semibold' : 'text-white/70'}`}
     >
       FLASH DAY
     </a>
 <a
-href="/personalizada"
-class="mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] text-white/70 transition-all duration-300 hover:text-ciava-gold"
+href="/personalizada" class={`mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] transition-all duration-300 hover:text-ciava-gold ${isActive('/personalizada') ? 'text-white font-semibold' : 'text-white/70'}`}
 >
 PERSONALIZADA
 </a>
     <a 
-      href="/#about" 
-      class="mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] text-white/70 transition-all duration-300 hover:text-ciava-gold"
+      href="/#about" class={`mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] transition-all duration-300 hover:text-ciava-gold ${isActive('/#about') ? 'text-white font-semibold' : 'text-white/70'}`}
     >
       NOSOTROS
     </a>
     <a 
-      href="/#services" 
-      class="mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] text-white/70 transition-all duration-300 hover:text-ciava-gold"
+      href="/#services" class={`mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] transition-all duration-300 hover:text-ciava-gold ${isActive('/#services') ? 'text-white font-semibold' : 'text-white/70'}`}
     >
       SERVICIOS
     </a>
     <a 
-      href="/estudio" 
-      class="mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] text-white/70 transition-all duration-300 hover:text-ciava-gold"
+      href="/estudio" class={`mobile-menu-link text-2xl font-serif font-light tracking-[0.15em] transition-all duration-300 hover:text-ciava-gold ${isActive('/estudio') ? 'text-white font-semibold' : 'text-white/70'}`}
     >
         ESTUDIO
     </a>

@@ -80,6 +80,8 @@ if (muestras.length === 0) {
   muestras = Object.values(fotosPortfolio).slice(0, 14).map((m) => ({ tipo: 'foto' as const, img: m.default }));
 }
 const duracion = Math.max(45, muestras.length * 7);
+const soloVideosArr = soloVideos.map((x) => (x as any).src);
+const videoEjemplo = soloVideosArr.length > 0 ? soloVideosArr[Math.floor(Math.random() * soloVideosArr.length)] : null;
 
 const datosCliente = {
   numero,
@@ -206,6 +208,14 @@ const datosCliente = {
             <p class="fdp-eyebrow">EXTRA · SE CONTRATA APARTE</p>
             <h3>{extra.nombre}</h3>
             <p>{extra.descripcion}</p>
+            {videoEjemplo && (
+              <span class="fdp-ver-ejemplo" tabindex="0">
+                MIRÁ UN EJEMPLO ACÁ
+                <span class="fdp-ejemplo-preview">
+                  <video src={videoEjemplo} autoplay muted loop playsinline preload="metadata"></video>
+                </span>
+              </span>
+            )}
           </div>
           <p class="fdp-pack-price">{precio(extra.precio)}</p>
         </div>
@@ -290,6 +300,14 @@ const datosCliente = {
                       <span class="fdp-opt-txt"><strong>{extra.nombre}</strong><small>{extra.descripcion}</small></span>
                       <span class="fdp-opt-price">{precio(extra.precio)}</span>
                     </label>
+                    {videoEjemplo && (
+                      <span class="fdp-ver-ejemplo" tabindex="0">
+                        MIRÁ UN EJEMPLO ACÁ
+                        <span class="fdp-ejemplo-preview">
+                          <video src={videoEjemplo} autoplay muted loop playsinline preload="metadata"></video>
+                        </span>
+                      </span>
+                    )}
                   </>
                 )}
                 <p class="fdp-label">{extra ? '4' : '3'}. Tu marca</p>
@@ -470,6 +488,11 @@ const datosCliente = {
     .fdp-final { margin: 56px 16px 72px; }
   }
   @media (prefers-reduced-motion: reduce) { .fdp-price { animation: none; } }
+
+  .fdp-ver-ejemplo { position: relative; display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12px; font-weight: 700; letter-spacing: .06em; color: #111111; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .fdp-ejemplo-preview { position: absolute; left: 0; bottom: calc(100% + 10px); width: 150px; aspect-ratio: 9 / 16; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,.3); opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .18s, transform .18s; pointer-events: none; z-index: 20; background: #000000; }
+  .fdp-ejemplo-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .fdp-ver-ejemplo:hover .fdp-ejemplo-preview, .fdp-ver-ejemplo:focus-within .fdp-ejemplo-preview { opacity: 1; visibility: visible; transform: translateY(0); }
 </style>
 
 <script is:inline>

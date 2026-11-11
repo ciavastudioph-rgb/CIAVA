@@ -1,0 +1,287 @@
+{
+  "packs": [
+    {
+      "nombre": "Pack Foto",
+      "precio": 50000,
+      "unidad": "por look",
+      "descripcion": "Hasta 10 fotos editadas por look."
+    },
+    {
+      "nombre": "Pack Foto & Video",
+      "precio": null,
+      "unidad": "por look",
+      "descripcion": "Hasta 10 fotos editadas por look + un video largo con clips de todos tus looks en uso y detalles."
+    }
+  ],
+  "extra": {
+    "nombre": "Reel editado",
+    "precio": null,
+    "descripcion": "Elegís la música, el texto, transiciones simples y qué looks salen en el reel."
+  },
+  "jornadas": [
+    {
+      "fecha": "2026-11-18",
+      "horario": "",
+      "modelo": "marianvsoler",
+      "instagram": "marianvsoler",
+      "estado": "disponible",
+      "etiqueta": "LOCACIÓN ESPECIAL",
+      "notas": [
+        "Joyería: cotización aparte.",
+        "Todo incluido: modelo, fotógrafa, estilista, make up & peinado, estudio & mobiliario."
+      ],
+      "packs": [
+        {
+          "nombre": "Pack Foto",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 60000
+            },
+            {
+              "hasta": 14,
+              "precio": 45000
+            },
+            {
+              "hasta": null,
+              "precio": 35000
+            }
+          ]
+        },
+        {
+          "nombre": "Pack Foto & Video",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas + 1 video por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 70000
+            },
+            {
+              "hasta": 14,
+              "precio": 55000
+            },
+            {
+              "hasta": null,
+              "precio": 45000
+            }
+          ]
+        }
+      ],
+      "fotos": [
+        "/src/assets/images/flashday/marianvsoler.jpg"
+      ]
+    },
+    {
+      "fecha": "2026-11-23",
+      "horario": "",
+      "modelo": "victoriandrino",
+      "instagram": "victoriandrino",
+      "estado": "disponible",
+      "etiqueta": "LOCACIÓN ESPECIAL",
+      "notas": [
+        "Joyería: cotización aparte.",
+        "Todo incluido: modelo, fotógrafa, estilista, make up & peinado, estudio & mobiliario."
+      ],
+      "packs": [
+        {
+          "nombre": "Pack Foto",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 60000
+            },
+            {
+              "hasta": 14,
+              "precio": 45000
+            },
+            {
+              "hasta": null,
+              "precio": 35000
+            }
+          ]
+        },
+        {
+          "nombre": "Pack Foto & Video",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas + 1 video por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 70000
+            },
+            {
+              "hasta": 14,
+              "precio": 55000
+            },
+            {
+              "hasta": null,
+              "precio": 45000
+            }
+          ]
+        }
+      ],
+      "fotos": [
+        "/src/assets/images/flashday/victoriandrino.jpg"
+      ]
+    },
+    {
+      "fecha": "2026-11-30",
+      "horario": "",
+      "modelo": "carolinafh__",
+      "instagram": "carolinafh__",
+      "estado": "disponible",
+      "notas": [
+        "Joyería: cotización aparte.",
+        "Todo incluido: modelo, fotógrafa, estilista, make up & peinado, estudio & mobiliario."
+      ],
+      "packs": [
+        {
+          "nombre": "Pack Foto",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 50000
+            },
+            {
+              "hasta": 14,
+              "precio": 40000
+            },
+            {
+              "hasta": null,
+              "precio": 30000
+            }
+          ]
+        },
+        {
+          "nombre": "Pack Foto & Video",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas + 1 video por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 60000
+            },
+            {
+              "hasta": 14,
+              "precio": 50000
+            },
+            {
+              "hasta": null,
+              "precio": 40000
+            }
+          ]
+        }
+      ],
+      "fotos": [
+        "/src/assets/images/flashday/carolinafh.jpg"
+      ]
+    },
+    {
+      "fecha": "2026-12-02",
+      "horario": "",
+      "modelo": "vickyypaleo",
+      "instagram": "vickyypaleo",
+      "estado": "disponible",
+      "packs": [
+        {
+          "nombre": "Pack Foto",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 55000
+            },
+            {
+              "hasta": 14,
+              "precio": 45000
+            },
+            {
+              "hasta": null,
+              "precio": 35000
+            }
+          ]
+        },
+        {
+          "nombre": "Pack Foto & Video",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas + 1 video por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 65000
+            },
+            {
+              "hasta": 14,
+              "precio": 55000
+            },
+            {
+              "hasta": null,
+              "precio": 45000
+            }
+          ]
+        }
+      ],
+      "fotos": [
+        "/src/assets/images/flashday/vickyypaleo.jpg"
+      ]
+    },
+    {
+      "fecha": "2026-12-03",
+      "horario": "",
+      "modelo": "orianacanias",
+      "instagram": "orianacanias",
+      "estado": "disponible",
+      "packs": [
+        {
+          "nombre": "Pack Foto",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 55000
+            },
+            {
+              "hasta": 14,
+              "precio": 45000
+            },
+            {
+              "hasta": null,
+              "precio": 35000
+            }
+          ]
+        },
+        {
+          "nombre": "Pack Foto & Video",
+          "unidad": "por look/producto",
+          "descripcion": "10 fotos editadas + 1 video por look o producto.",
+          "tramos": [
+            {
+              "hasta": 7,
+              "precio": 65000
+            },
+            {
+              "hasta": 14,
+              "precio": 55000
+            },
+            {
+              "hasta": null,
+              "precio": 45000
+            }
+          ]
+        }
+      ],
+      "fotos": [
+        "/src/assets/images/flashday/orianacanias.jpg"
+      ]
+    }
+  ]
+}

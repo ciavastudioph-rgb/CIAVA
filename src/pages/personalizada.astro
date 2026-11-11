@@ -25,8 +25,16 @@ const fotosGlob = import.meta.glob<{ default: ImageMetadata }>(
 const fotos: ImageMetadata[] = Object.keys(fotosGlob)
   .sort((a, b) => a.localeCompare(b))
   .map((k) => fotosGlob[k].default);
-const portada = fotos[0] ?? null;
-const galeria = fotos.slice(1).length > 0 ? fotos.slice(1) : fotos;
+const galeria = fotos;
+
+// Portada: foto horizontal para web y vertical para celular (carpetas opcionales).
+// Si no hay una foto dedicada en esas carpetas, usa la primera foto de la carpeta principal.
+const portadaWebGlob = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/personalizadas/portada-web/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const portadaMobileGlob = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/personalizadas/portada-mobile/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const portadaWebList = Object.keys(portadaWebGlob).sort((a, b) => a.localeCompare(b)).map((k) => portadaWebGlob[k].default);
+const portadaMobileList = Object.keys(portadaMobileGlob).sort((a, b) => a.localeCompare(b)).map((k) => portadaMobileGlob[k].default);
+const portadaWeb = portadaWebList[0] ?? fotos[0] ?? null;
+const portadaMobile = portadaMobileList[0] ?? portadaWeb;
 
 // Carrusel "Marcas que confiaron en su Personalizada"
 type Muestra = { tipo: 'foto'; img: ImageMetadata } | { tipo: 'video'; src: string };
@@ -73,9 +81,14 @@ const duracion = Math.max(45, muestras.length * 7);
           <a href="#fotos" class="fdp-btn fdp-btn-alt">VER EJEMPLOS</a>
         </div>
       </div>
-      {portada && (
+      {(portadaWeb || portadaMobile) && (
         <div class="fdp-hero-photo">
-          <Image src={portada} alt="Producción fotográfica personalizada de CIAVA Studio" widths={[600, 900, 1200]} sizes="(max-width: 767px) 100vw, 45vw" class="fdp-cover" loading="eager" quality={80} />
+          {portadaWeb && (
+            <Image src={portadaWeb} alt="Producción fotográfica personalizada de CIAVA Studio" widths={[600, 900, 1200]} sizes="45vw" class="fdp-cover per-cover-web" loading="eager" quality={80} />
+          )}
+          {portadaMobile && (
+            <Image src={portadaMobile} alt="Producción fotográfica personalizada de CIAVA Studio" widths={[500, 800]} sizes="100vw" class="fdp-cover per-cover-mobile" loading="eager" quality={80} />
+          )}
         </div>
       )}
     </section>
@@ -187,7 +200,9 @@ const duracion = Math.max(45, muestras.length * 7);
   .per-hero-text { flex: 1 1 55%; display: flex; flex-direction: column; justify-content: center; padding: 64px clamp(24px, 7vw, 120px); }
   .fdp-hero-photo { flex: 0 0 45%; position: relative; min-height: 520px; }
   .fdp-cover { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 20%; }
-  .fdp-title { font-size: clamp(3.4rem, 10vw, 8.5rem); line-height: .9; letter-spacing: -.01em; margin: 0 0 24px; color: #111111; }
+  .fdp-title { font-size: clamp(2.6rem, 6.5vw, 5.6rem); line-height: .95; letter-spacing: -.01em; margin: 0 0 24px; color: #111111; }
+  .per-cover-mobile { display: none; }
+  @media (max-width: 767px) { .per-cover-web { display: none; } .per-cover-mobile { display: block; } }
   .fdp-lead { font-size: 17px; line-height: 1.6; color: #2a2018; margin: 0 0 20px; }
   .fdp-lead strong { color: #111111; font-weight: 600; }
   .fdp-actions { display: flex; flex-direction: column; gap: 12px; max-width: 360px; }

@@ -175,7 +175,12 @@ const datosCliente = {
                   <span class="fdp-card-ph">CIAVA</span>
                 )}
                 <div class="fdp-date"><span>{j.dia}</span><strong>{j.num}</strong><span>{j.mes}</span></div>
-                {j.etiqueta && <span class="fdp-card-tag">{j.etiqueta}</span>}
+                {j.etiqueta && (
+          <span class="fdp-card-tag">
+            {j.etiqueta}
+            {j.fotosLocacion && j.fotosLocacion.length > 0 && <small class="fdp-card-tag-hint">📸 ¡Mirá más fotos de la locación!</small>}
+          </span>
+        )}
                 {j.ig && (
                   <a class="fdp-card-ig" href={`https://www.instagram.com/${j.ig}/`} target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label={`Ver Instagram de ${j.modelo}`}>
                     <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>
@@ -525,6 +530,7 @@ const datosCliente = {
   .fdp-ejemplo-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .fdp-ver-ejemplo:hover .fdp-ejemplo-preview, .fdp-ver-ejemplo:focus-within .fdp-ejemplo-preview { opacity: 1; visibility: visible; transform: translateY(0); }
   .fdp-card-tag { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(17,17,17,.82); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-align: center; padding: 8px 10px; }
+  .fdp-card-tag-hint { display: block; font-size: 9.5px; font-weight: 500; letter-spacing: .02em; margin-top: 4px; opacity: .9; }
   .fdp-card-ig { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.92); color: #111111; font-size: 11px; font-weight: 600; padding: 5px 10px 5px 8px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.15); text-decoration: none; }
   .fdp-card-ig:hover { background: #ffffff; }
   .fdp-card-ig svg { flex: none; }

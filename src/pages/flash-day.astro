@@ -175,11 +175,13 @@ const datosCliente = {
                   <span class="fdp-card-ph">CIAVA</span>
                 )}
                 <div class="fdp-date"><span>{j.dia}</span><strong>{j.num}</strong><span>{j.mes}</span></div>
-                {j.etiqueta && (
+                {j.etiqueta ? (
           <span class="fdp-card-tag">
             {j.etiqueta}
             {j.fotosLocacion && j.fotosLocacion.length > 0 && <small class="fdp-card-tag-hint">📸 ¡Mirá más fotos de la locación!</small>}
           </span>
+        ) : (
+          <span class="fdp-card-tag">NORDELTA STUDIO</span>
         )}
                 {j.ig && (
                   <a class="fdp-card-ig" href={`https://www.instagram.com/${j.ig}/`} target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label={`Ver Instagram de ${j.modelo}`}>

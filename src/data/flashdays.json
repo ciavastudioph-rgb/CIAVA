@@ -253,7 +253,9 @@
       ],
       "fotos": [
         "/src/assets/images/flashday/vickyypaleo.jpg"
-      ]
+      ],
+      "tematica": "NAVIDAD",
+      "tematicaEmoji": "🎄"
     },
     {
       "fecha": "2026-12-03",
@@ -303,7 +305,9 @@
       ],
       "fotos": [
         "/src/assets/images/flashday/orianacanias.jpg"
-      ]
+      ],
+      "tematica": "AÑO NUEVO",
+      "tematicaEmoji": "🎆"
     }
   ]
 }

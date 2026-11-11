@@ -255,7 +255,8 @@
         "/src/assets/images/flashday/vickyypaleo.jpg"
       ],
       "tematica": "NAVIDAD",
-      "tematicaEmoji": "🎄"
+      "tematicaEmoji": "🎄",
+      "tematicaDescripcion": "Vamos a tener props navideños para sumar a las fotos de tu marca."
     },
     {
       "fecha": "2026-12-03",
@@ -307,7 +308,8 @@
         "/src/assets/images/flashday/orianacanias.jpg"
       ],
       "tematica": "AÑO NUEVO",
-      "tematicaEmoji": "🎆"
+      "tematicaEmoji": "🎆",
+      "tematicaDescripcion": "Vamos a tener props de año nuevo para sumar a las fotos de tu marca."
     }
   ]
 }

@@ -72,6 +72,17 @@
       ],
       "fotos": [
         "/src/assets/images/flashday/marianvsoler.jpg"
+      ],
+      "fotosLocacion": [
+        "/src/assets/images/flashday/locacion/locacion-01.jpg",
+        "/src/assets/images/flashday/locacion/locacion-02.jpg",
+        "/src/assets/images/flashday/locacion/locacion-03.jpg",
+        "/src/assets/images/flashday/locacion/locacion-04.jpg",
+        "/src/assets/images/flashday/locacion/locacion-05.jpg",
+        "/src/assets/images/flashday/locacion/locacion-06.jpg",
+        "/src/assets/images/flashday/locacion/locacion-07.jpg",
+        "/src/assets/images/flashday/locacion/locacion-08.jpg",
+        "/src/assets/images/flashday/locacion/locacion-09.jpg"
       ]
     },
     {
@@ -127,6 +138,17 @@
       ],
       "fotos": [
         "/src/assets/images/flashday/victoriandrino.jpg"
+      ],
+      "fotosLocacion": [
+        "/src/assets/images/flashday/locacion/locacion-01.jpg",
+        "/src/assets/images/flashday/locacion/locacion-02.jpg",
+        "/src/assets/images/flashday/locacion/locacion-03.jpg",
+        "/src/assets/images/flashday/locacion/locacion-04.jpg",
+        "/src/assets/images/flashday/locacion/locacion-05.jpg",
+        "/src/assets/images/flashday/locacion/locacion-06.jpg",
+        "/src/assets/images/flashday/locacion/locacion-07.jpg",
+        "/src/assets/images/flashday/locacion/locacion-08.jpg",
+        "/src/assets/images/flashday/locacion/locacion-09.jpg"
       ]
     },
     {

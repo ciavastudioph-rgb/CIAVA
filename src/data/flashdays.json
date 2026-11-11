@@ -15,14 +15,14 @@
   ],
   "extra": {
     "nombre": "Reel editado",
-    "precio": null,
+    "precio": 50000,
     "descripcion": "Elegís la música, el texto, transiciones simples y qué looks salen en el reel."
   },
   "jornadas": [
     {
       "fecha": "2026-11-18",
       "horario": "",
-      "modelo": "marianvsoler",
+      "modelo": "MARIAN",
       "instagram": "marianvsoler",
       "estado": "disponible",
       "etiqueta": "LOCACIÓN ESPECIAL",
@@ -72,12 +72,23 @@
       ],
       "fotos": [
         "/src/assets/images/flashday/marianvsoler.jpg"
+      ],
+      "fotosLocacion": [
+        "/src/assets/images/flashday/locacion-01.jpg",
+        "/src/assets/images/flashday/locacion-02.jpg",
+        "/src/assets/images/flashday/locacion-03.jpg",
+        "/src/assets/images/flashday/locacion-04.jpg",
+        "/src/assets/images/flashday/locacion-05.jpg",
+        "/src/assets/images/flashday/locacion-06.jpg",
+        "/src/assets/images/flashday/locacion-07.jpg",
+        "/src/assets/images/flashday/locacion-08.jpg",
+        "/src/assets/images/flashday/locacion-09.jpg"
       ]
     },
     {
       "fecha": "2026-11-23",
       "horario": "",
-      "modelo": "victoriandrino",
+      "modelo": "VICKY ANDRINO",
       "instagram": "victoriandrino",
       "estado": "disponible",
       "etiqueta": "LOCACIÓN ESPECIAL",
@@ -127,12 +138,23 @@
       ],
       "fotos": [
         "/src/assets/images/flashday/victoriandrino.jpg"
+      ],
+      "fotosLocacion": [
+        "/src/assets/images/flashday/locacion-01.jpg",
+        "/src/assets/images/flashday/locacion-02.jpg",
+        "/src/assets/images/flashday/locacion-03.jpg",
+        "/src/assets/images/flashday/locacion-04.jpg",
+        "/src/assets/images/flashday/locacion-05.jpg",
+        "/src/assets/images/flashday/locacion-06.jpg",
+        "/src/assets/images/flashday/locacion-07.jpg",
+        "/src/assets/images/flashday/locacion-08.jpg",
+        "/src/assets/images/flashday/locacion-09.jpg"
       ]
     },
     {
       "fecha": "2026-11-30",
       "horario": "",
-      "modelo": "carolinafh__",
+      "modelo": "CARO",
       "instagram": "carolinafh__",
       "estado": "disponible",
       "notas": [
@@ -186,7 +208,7 @@
     {
       "fecha": "2026-12-02",
       "horario": "",
-      "modelo": "vickyypaleo",
+      "modelo": "VICKY PALEO",
       "instagram": "vickyypaleo",
       "estado": "disponible",
       "packs": [
@@ -231,12 +253,15 @@
       ],
       "fotos": [
         "/src/assets/images/flashday/vickyypaleo.jpg"
-      ]
+      ],
+      "tematica": "NAVIDAD",
+      "tematicaEmoji": "🎄",
+      "tematicaDescripcion": "Vamos a tener props navideños para sumar a las fotos de tu marca."
     },
     {
       "fecha": "2026-12-03",
       "horario": "",
-      "modelo": "orianacanias",
+      "modelo": "ORI",
       "instagram": "orianacanias",
       "estado": "disponible",
       "packs": [
@@ -281,7 +306,10 @@
       ],
       "fotos": [
         "/src/assets/images/flashday/orianacanias.jpg"
-      ]
+      ],
+      "tematica": "AÑO NUEVO",
+      "tematicaEmoji": "🎆",
+      "tematicaDescripcion": "Vamos a tener props de año nuevo para sumar a las fotos de tu marca."
     }
   ]
 }

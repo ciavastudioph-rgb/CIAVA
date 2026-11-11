@@ -1,0 +1,335 @@
+---
+/**
+ * Página Personalizada (/personalizada)
+ * - Jornada 100% dedicada a una sola marca (a diferencia de Flash Day, que es compartida).
+ * - Las fotos de ejemplo salen de src/assets/images/personalizadas/ (todas las que haya ahí).
+ * - El carrusel "Marcas que confiaron" usa src/assets/images/personalizadas/marcas/ si existe,
+ *   y si no, cae en las de Flash Day / portfolio para no mostrarse vacío.
+ */
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import settings from '../data/settings.json';
+
+const numero = (settings.contact.whatsapp || '').replace(/[^\d]/g, '');
+const waLink = (msg: string) => `https://wa.me/${numero}?text=${encodeURIComponent(msg)}`;
+const linkCotizar = waLink('¡Hola Ciava! Quiero cotizar una sesión personalizada para mi marca 📸✨');
+const linkReel = waLink('¡Hola Ciava! Para mi sesión personalizada, quiero sumar un reel editado 🎬');
+
+// Fotos de ejemplo de la portada + la galería (todas las que haya en esta carpeta)
+const fotosGlob = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/images/personalizadas/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}',
+  { eager: true }
+);
+const fotos: ImageMetadata[] = Object.keys(fotosGlob)
+  .sort((a, b) => a.localeCompare(b))
+  .map((k) => fotosGlob[k].default);
+const galeria = fotos;
+
+// Portada: foto horizontal para web y vertical para celular (carpetas opcionales).
+// Si no hay una foto dedicada en esas carpetas, usa la primera foto de la carpeta principal.
+const portadaWebGlob = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/personalizadas/portada-web/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const portadaMobileGlob = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/personalizadas/portada-mobile/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const portadaWebList = Object.keys(portadaWebGlob).sort((a, b) => a.localeCompare(b)).map((k) => portadaWebGlob[k].default);
+const portadaMobileList = Object.keys(portadaMobileGlob).sort((a, b) => a.localeCompare(b)).map((k) => portadaMobileGlob[k].default);
+const portadaWeb = portadaWebList[0] ?? fotos[0] ?? null;
+const portadaMobile = portadaMobileList[0] ?? portadaWeb;
+
+// Carrusel "Marcas que confiaron en su Personalizada"
+type Muestra = { tipo: 'foto'; img: ImageMetadata } | { tipo: 'video'; src: string };
+const fotosMarcasPer = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/personalizadas/marcas/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const fotosMarcasFlash = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/flashday/marcas/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+const videosMarcas = import.meta.glob<string>('/src/assets/videos/flashday/*.{mp4,MP4,webm,WEBM,mov,MOV}', { eager: true, query: '?url', import: 'default' });
+const fotosPortfolio = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/portfolio/**/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true });
+
+const baseMarcas = Object.keys(fotosMarcasPer).length > 0 ? fotosMarcasPer : fotosMarcasFlash;
+const soloFotos: Muestra[] = Object.values(baseMarcas).map((m: any) => ({ tipo: 'foto' as const, img: m.default }));
+const soloVideos: Muestra[] = Object.values(videosMarcas).map((src: any) => ({ tipo: 'video' as const, src }));
+let muestras: Muestra[] = [];
+const maxLen = Math.max(soloFotos.length, soloVideos.length * 3);
+for (let k = 0, f = 0, vv = 0; k < maxLen + soloVideos.length; k++) {
+  if ((k + 1) % 4 === 0 && vv < soloVideos.length) muestras.push(soloVideos[vv++]);
+  else if (f < soloFotos.length) muestras.push(soloFotos[f++]);
+  else if (vv < soloVideos.length) muestras.push(soloVideos[vv++]);
+}
+if (muestras.length === 0) {
+  muestras = Object.values(fotosPortfolio).slice(0, 14).map((m: any) => ({ tipo: 'foto' as const, img: m.default }));
+}
+const duracion = Math.max(45, muestras.length * 7);
+---
+
+<Layout
+  title="Personalizada | Producción fotográfica exclusiva para tu marca | CIAVA Studio"
+  description="Una jornada 100% dedicada a tu marca: elegís tu modelo de catálogo, nosotras armamos todo y te llevás foto o foto y video a tu medida. Catering saludable opcional."
+  keywords="sesión personalizada, producción de moda a medida, fotografía para marcas, catálogo de modelos, estudio nordelta, foto y video para marcas"
+>
+  <div class="per">
+    <!-- PORTADA -->
+    <section class="per-hero">
+      <div class="per-hero-text">
+        <p class="fdp-eyebrow">PRODUCCIÓN EXCLUSIVA PARA TU MARCA</p>
+        <span class="fdp-rule"></span>
+        <h1 class="fdp-title">100% <br class="fdp-br" />PERSONALIZADA</h1>
+        <p class="fdp-lead">
+          <strong>Un día entero dedicado solo a tu marca.</strong><br />
+          Elegís tu modelo de catálogo, armamos los looks con vos<br />
+          y te llevás contenido hecho <strong class="fdp-u">a tu medida</strong>.
+        </p>
+        <div class="fdp-actions">
+          <a href={linkCotizar} target="_blank" rel="noopener" class="fdp-btn">QUIERO COTIZAR MI SESIÓN</a>
+          <a href="#fotos" class="fdp-btn fdp-btn-alt">VER EJEMPLOS</a>
+        </div>
+      </div>
+      {(portadaWeb || portadaMobile) && (
+        <div class="fdp-hero-photo">
+          {portadaWeb && (
+            <Image src={portadaWeb} alt="Producción fotográfica personalizada de CIAVA Studio" widths={[600, 900, 1200]} sizes="45vw" class="fdp-cover per-cover-web" loading="eager" quality={80} />
+          )}
+          {portadaMobile && (
+            <Image src={portadaMobile} alt="Producción fotográfica personalizada de CIAVA Studio" widths={[500, 800]} sizes="100vw" class="fdp-cover per-cover-mobile" loading="eager" quality={80} />
+          )}
+        </div>
+      )}
+    </section>
+
+    <!-- QUÉ INCLUYE -->
+    <section class="fdp-section">
+      <h2 class="fdp-h2">¿QUÉ INCLUYE?</h2>
+      <ol class="fdp-steps">
+        <li><span>01</span><h3>Definís looks y elegís tu modelo</h3><p>Nos contás cuántos artículos querés shootear, mirás nuestro catálogo de modelos y elegís a la que mejor se adapta a tu marca.</p></li>
+        <li><span>02</span><h3>Nosotras armamos todo</h3><p>Styling, armado de looks y logística del día. Si querés, también contratamos catering saludable para todo el equipo (opcional, se cotiza aparte).</p></li>
+        <li><span>03</span><h3>Hacemos el shooting</h3><p>Fotos, y video también si elegiste esa opción.</p></li>
+        <li><span>04</span><h3>Recibís tu contenido</h3><p>En 5 días hábiles tenés todo el contenido listo y disponible para vos.</p></li>
+      </ol>
+      <div class="fdp-extra per-reel">
+        <div>
+          <p class="fdp-eyebrow">EXTRA · SE CONTRATA APARTE</p>
+          <h3>Reel editado de tu producción</h3>
+          <p>Igual que en Flash Day, también podés sumar un reel editado de tu sesión personalizada.</p>
+        </div>
+        <a href={linkReel} target="_blank" rel="noopener" class="fdp-btn">QUIERO SUMAR UN REEL</a>
+      </div>
+    </section>
+
+    <!-- GALERÍA DE EJEMPLOS -->
+    {galeria.length > 0 && (
+      <section id="fotos" class="fdp-section per-fotos">
+        <h2 class="fdp-h2">ASÍ SE VE UNA PERSONALIZADA</h2>
+        <p class="fdp-sub">Algunos ejemplos de producciones que hicimos a medida. Deslizá para ver más →</p>
+        <div class="per-scroller">
+          {galeria.map((f, k) => (
+            <div class="per-scroller-item">
+              <Image src={f} alt={`Ejemplo de producción personalizada CIAVA Studio ${k + 1}`} widths={[400, 700]} sizes="(max-width: 767px) 80vw, 360px" class="per-scroller-img" loading="lazy" quality={78} />
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- ARMÁ TU PERSONALIZADA (estimador) -->
+    <section class="fdp-section per-estimador">
+      <h2 class="fdp-h2">ARMÁ TU PERSONALIZADA</h2>
+      <p class="fdp-sub">Contanos cuántos looks querés producir y te damos un estimado de las horas que vamos a necesitar. Después hablamos por WhatsApp para elegir juntas la modelo ideal para tu marca.</p>
+      <div class="per-estimador-card">
+        <p class="fdp-label">¿Cuántos looks querés hacer?</p>
+        <div class="fdp-counter">
+          <button type="button" data-per-step="-1" aria-label="Menos looks">−</button>
+          <output data-per-looks>4</output>
+          <button type="button" data-per-step="1" aria-label="Más looks">+</button>
+        </div>
+        <p class="fdp-hint">Cada look = hasta 2 prendas o 1 accesorio.</p>
+        <div class="fdp-total">
+          <span>Duración estimada</span>
+          <strong data-per-horas>—</strong>
+        </div>
+        <a class="fdp-btn fdp-btn-wa" data-per-cta data-numero={numero} href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" /></svg>
+          QUIERO QUE ME AYUDEN A ELEGIR MODELO
+        </a>
+        <p class="fdp-hint">Se abre WhatsApp con tu consulta armada. Es un estimado: el presupuesto final te lo confirmamos a medida.</p>
+      </div>
+    </section>
+
+    <!-- MARCAS QUE CONFIARON (carrusel) -->
+    {muestras.length > 0 && (
+      <section class="fdp-marcas">
+        <h2 class="fdp-h2">MARCAS QUE CONFIARON</h2>
+        <p class="fdp-sub">Así quedó el contenido de otras marcas. El próximo puede ser el tuyo.</p>
+        <div class="fdp-marquee">
+          <div class="fdp-track" style={`--dur: ${duracion}s`}>
+            {[...muestras, ...muestras].map((m, k) => (
+              m.tipo === 'foto' ? (
+                <Image src={m.img} alt={k < muestras.length ? 'Contenido de una marca en una producción de CIAVA' : ''} widths={[300, 520]} sizes="260px" class="fdp-m-item" loading="lazy" decoding="async" quality={70} />
+              ) : (
+                <div class="fdp-m-video">
+                  <video class="fdp-m-item" src={m.src} autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+                  <span class="fdp-m-badge">REEL EDITADO</span>
+                </div>
+              )
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- CIERRE -->
+    <section class="fdp-final">
+      <h2 class="fdp-h2">¿LISTA PARA EMPEZAR?</h2>
+      <p>Contanos sobre tu marca y armamos juntas tu producción personalizada, de punta a punta.</p>
+      <a href={linkCotizar} target="_blank" rel="noopener" class="fdp-btn">QUIERO MI SESIÓN PERSONALIZADA</a>
+    </section>
+  </div>
+
+  <Footer />
+</Layout>
+
+<style is:global>
+  .per { color: #111111; padding-top: 76px; }
+  @media (min-width: 768px) { .per { padding-top: 92px; } }
+  .fdp-eyebrow { font-size: 11px; letter-spacing: .3em; margin: 0 0 10px; color: #111111; }
+  .fdp-rule { display: block; width: 44px; height: 2px; background: #111111; margin-bottom: 18px; }
+  .fdp-u { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px; font-weight: 600; color: #111111; }
+  .fdp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-align: center; background: #111111; color: #ffffff; font-weight: 600; font-size: 12px; letter-spacing: .2em; padding: 14px 26px; border-radius: 999px; border: 1.5px solid #111111; transition: transform .2s, background .2s, color .2s; }
+  .fdp-btn:hover { transform: translateY(-1px); }
+  .fdp-btn-alt { background: transparent; color: #111111; }
+  .fdp-btn-alt:hover { background: #111111; color: #ffffff; }
+
+  /* Portada (comparte estilo con Flash Day) */
+  .per-hero { display: flex; background: #d6af88; min-height: calc(100vh - 92px); }
+  .per-hero-text { flex: 1 1 55%; display: flex; flex-direction: column; justify-content: center; padding: 64px clamp(24px, 7vw, 120px); }
+  .fdp-hero-photo { flex: 0 0 45%; position: relative; min-height: 520px; }
+  .fdp-cover { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 20%; }
+  .fdp-title { font-size: clamp(2.6rem, 6.5vw, 5.6rem); line-height: .95; letter-spacing: -.01em; margin: 0 0 24px; color: #111111; }
+  .per-cover-mobile { display: none; }
+  @media (max-width: 767px) { .per-cover-web { display: none; } .per-cover-mobile { display: block; } }
+  .fdp-lead { font-size: 17px; line-height: 1.6; color: #2a2018; margin: 0 0 20px; }
+  .fdp-lead strong { color: #111111; font-weight: 600; }
+  .fdp-actions { display: flex; flex-direction: column; gap: 12px; max-width: 360px; }
+
+  /* Secciones */
+  .fdp-section { max-width: 1120px; margin: 0 auto; padding: 72px 24px 8px; }
+  .fdp-h2 { font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: .12em; text-align: center; margin: 0 0 12px; color: #111111; }
+  .fdp-sub { text-align: center; color: #666666; font-size: 14px; margin: 0 0 32px; }
+  .fdp-steps { list-style: none; padding: 0; margin: 32px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .fdp-steps li { background: #f6f6f6; border-radius: 20px; padding: 24px 22px; }
+  .fdp-steps span { display: block; font-size: 13px; letter-spacing: .2em; color: #b08a63; font-weight: 600; margin-bottom: 10px; }
+  .fdp-steps h3 { font-size: 17px; letter-spacing: .02em; margin: 0 0 8px; color: #111111; }
+  .fdp-steps p { font-size: 14px; line-height: 1.55; color: #555555; margin: 0; }
+  .fdp-steps strong { color: #111111; font-weight: 600; }
+
+  /* Extra (reel) */
+  .fdp-extra { margin-top: 16px; border: 1.5px dashed #111111; border-radius: 22px; padding: 24px; display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .fdp-extra h3 { font-size: 18px; margin: 0 0 6px; color: #111111; }
+  .fdp-extra p { margin: 0; font-size: 14px; color: #555555; }
+  .fdp-extra .fdp-eyebrow { margin-bottom: 8px; color: #111111; }
+
+  /* Galería scrolleable de ejemplos */
+  .per-fotos { padding-bottom: 8px; }
+  .per-scroller { display: flex; gap: 14px; overflow-x: auto; padding: 8px 4px 18px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .per-scroller::-webkit-scrollbar { height: 8px; }
+  .per-scroller::-webkit-scrollbar-thumb { background: #d6af88; border-radius: 999px; }
+  .per-scroller-item { flex: 0 0 auto; width: 280px; aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; scroll-snap-align: start; background: #f2f2f2; }
+  .per-scroller-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* Reel extra */
+  .per-reel { margin-top: 28px; }
+
+  /* Estimador */
+  .fdp-label { font-size: 12px; letter-spacing: .18em; font-weight: 600; margin: 22px 0 10px; color: #111111; }
+  .fdp-counter { display: inline-flex; align-items: center; border: 1.5px solid #111111; border-radius: 999px; overflow: hidden; }
+  .fdp-counter button { width: 46px; height: 44px; font-size: 20px; background: transparent; color: #111111; cursor: pointer; }
+  .fdp-counter button:hover { background: #f2f2f2; }
+  .fdp-counter output { min-width: 44px; text-align: center; font-weight: 700; font-size: 17px; }
+  .fdp-hint { font-size: 12px; color: #777777; margin: 8px 0 0; line-height: 1.5; }
+  .fdp-total { display: flex; justify-content: space-between; align-items: center; background: #f6f6f6; border-radius: 16px; padding: 14px 16px; margin: 20px 0 14px; }
+  .fdp-total span { font-size: 13px; color: #555555; }
+  .fdp-total strong { font-size: 22px; font-weight: 700; }
+  .fdp-btn-wa { width: 100%; background: #25D366; border-color: #25D366; color: #ffffff; }
+  .fdp-btn-wa svg { width: 20px; height: 20px; }
+  .per-estimador-card { max-width: 480px; margin: 28px auto 0; text-align: center; border: 1.5px solid #111111; border-radius: 26px; padding: 32px 28px; }
+  .per-estimador-card .fdp-label { text-align: left; }
+  .per-estimador-card .fdp-counter { margin: 0 auto 4px; }
+  .per-estimador-card .fdp-total { margin-top: 18px; }
+  .per-estimador-card .fdp-btn-wa { margin-top: 6px; width: 100%; }
+
+  /* Carrusel marcas */
+  .fdp-marcas { padding: 72px 0 8px; overflow: hidden; }
+  .fdp-marcas .fdp-sub { margin-bottom: 28px; }
+  .fdp-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+  .fdp-track { display: flex; width: max-content; animation: fdpMarquee var(--dur, 60s) linear infinite; }
+  @media (hover: hover) { .fdp-marquee:hover .fdp-track { animation-play-state: paused; } }
+  .fdp-m-item { flex: none; height: 360px; width: auto; max-width: none; margin-right: 14px; border-radius: 18px; object-fit: cover; background: #f2f2f2; }
+  .fdp-m-video { position: relative; flex: none; margin-right: 14px; }
+  .fdp-m-video .fdp-m-item { margin-right: 0; }
+  video.fdp-m-item { aspect-ratio: 9 / 16; }
+  .fdp-m-badge { position: absolute; top: 10px; left: 10px; background: rgba(17,17,17,.82); color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 5px 10px; border-radius: 999px; }
+  @keyframes fdpMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .fdp-track { animation: none; } }
+
+  /* Cierre */
+  .fdp-final { text-align: center; max-width: 720px; margin: 72px auto 80px; padding: 48px 24px; background: #d6af88; border-radius: 28px; }
+  .fdp-final p { color: #2a2018; margin: 0 0 22px; }
+
+  @media (max-width: 900px) { .fdp-steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 767px) {
+    .per-hero { flex-direction: column-reverse; min-height: 0; }
+    .fdp-hero-photo { min-height: 0; height: 58vh; max-height: 460px; flex: none; }
+    .per-hero-text { padding: 28px 22px 36px; }
+    .fdp-br { display: none; }
+    .fdp-title { font-size: 3.3rem; margin-bottom: 14px; }
+    .fdp-lead { font-size: 14.5px; }
+    .fdp-actions { max-width: none; }
+    .fdp-section { padding-top: 52px; }
+    .fdp-steps { grid-template-columns: 1fr; }
+    .per-scroller-item { width: 72vw; }
+    .per-estimador-card { padding: 26px 20px; }
+    .fdp-marcas { padding-top: 52px; }
+    .fdp-m-item { height: 250px; margin-right: 10px; border-radius: 14px; }
+    .fdp-m-video { margin-right: 10px; }
+    .fdp-m-badge { font-size: 9px; padding: 4px 8px; }
+    .fdp-final { margin: 56px 16px 72px; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    function horasTexto(looks) {
+      // Aprox. 1 hora de base (armado/logística) + 20 min por look, redondeado a la media hora.
+      var horas = Math.round((1 + looks * (1 / 3)) * 2) / 2;
+      var str = (horas % 1 === 0) ? String(horas) : String(horas).replace('.', ',');
+      return str + (horas === 1 ? ' hora aprox.' : ' horas aprox.');
+    }
+    function init() {
+      var card = document.querySelector('.per-estimador-card');
+      if (!card || card.dataset.ready) return;
+      card.dataset.ready = '1';
+      var out = card.querySelector('[data-per-looks]');
+      var horasEl = card.querySelector('[data-per-horas]');
+      var cta = card.querySelector('[data-per-cta]');
+
+      function actualizar() {
+        var looks = Number(out.textContent) || 1;
+        var horas = horasTexto(looks);
+        horasEl.textContent = horas;
+        var msg = '¡Hola Ciava! Quiero una producción personalizada para mi marca 📸\n\n' +
+          '👗 Looks que me gustaría hacer: ' + looks + '\n' +
+          '⏱️ Duración estimada: ' + horas + '\n\n' +
+          '¿Me ayudan a elegir la modelo que mejor se adapte a mi marca? 😊';
+        cta.href = 'https://wa.me/' + (cta.getAttribute('data-numero') || '') + '?text=' + encodeURIComponent(msg);
+      }
+
+      card.querySelectorAll('[data-per-step]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var n = Math.max(1, Math.min(60, (Number(out.textContent) || 1) + Number(b.getAttribute('data-per-step'))));
+          out.textContent = String(n);
+          actualizar();
+        });
+      });
+      actualizar();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+    document.addEventListener('astro:page-load', init);
+  })();
+</script>

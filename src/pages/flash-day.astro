@@ -51,10 +51,13 @@ const jornadas = (data.jornadas as any[])
     const fotos = ((j.fotos || []) as string[])
       .map((f) => resolveImageWarn(f, `flash day ${j.fecha}`))
       .filter((x): x is ImageMetadata => !!x);
+    const fotosLocacion = ((j.fotosLocacion || []) as string[])
+      .map((f) => resolveImageWarn(f, `flash day locación ${j.fecha}`))
+      .filter((x): x is ImageMetadata => !!x);
     const ig = String(j.instagram || '').trim().replace(/^@/, '');
     const estado = ESTADOS[j.estado] ?? ESTADOS.disponible;
     return {
-      ...j, i, dt, fotos, ig, estado,
+      ...j, i, dt, fotos, fotosLocacion, ig, estado,
       completo: j.estado === 'completo',
       dia: DIAS[dt.getDay()], num: String(d).padStart(2, '0'), mes: MESES[(m || 1) - 1],
     };
@@ -94,7 +97,7 @@ const datosCliente = {
 
 <Layout
   title="Flash Day | Jornadas de fotos compartidas para marcas | CIAVA Studio"
-  description="Flash Day de CIAVA Studio: una modelo, un estudio, varias marcas. Sumá tus looks a la próxima jornada en Nordelta y recibí tus fotos editadas en 72 hs."
+  description="Flash Day de CIAVA Studio: una modelo, un estudio, varias marcas. Sumá tus looks a la próxima jornada en Nordelta y recibí tus fotos editadas en 5 días hábiles."
   keywords="flash day, fotos para marcas, fotografía de moda económica, jornada compartida, fotos con modelo, estudio nordelta, contenido para tienda online"
 >
   <div class="fdp">
@@ -107,7 +110,7 @@ const datosCliente = {
         <p class="fdp-lead">
           <strong>Una modelo, un estudio, varias marcas.</strong><br />
           Sumá tus looks a la próxima jornada<br />
-          y recibí tus fotos editadas en <strong class="fdp-u">72 hs</strong>.
+          y recibí tus fotos editadas en <strong class="fdp-u">5 días hábiles</strong> (igual, casi siempre te las mandamos antes 😉).
         </p>
         {desdePrecio && (
           <p class="fdp-price-row">desde <span class="fdp-price">{precio(desdePrecio)}</span> <strong class="fdp-u">por look</strong></p>
@@ -129,9 +132,9 @@ const datosCliente = {
       <h2 class="fdp-h2">¿CÓMO FUNCIONA?</h2>
       <ol class="fdp-steps">
         <li><span>01</span><h3>Elegís tu fecha</h3><p>Mirá las próximas jornadas y la modelo de cada una.</p></li>
-        <li><span>02</span><h3>Reservás tu lugar</h3><p>Nos escribís por WhatsApp, confirmás con <strong>ACEPTO + el nombre de tu marca</strong> y te pasamos los datos de transferencia.</p></li>
-        <li><span>03</span><h3>Mandás tus productos</h3><p>Todo en una caja cerrada, sí o sí el día anterior a la jornada.</p></li>
-        <li><span>04</span><h3>Recibís tu contenido</h3><p>Tus fotos editadas en 72 hs (y el video, si elegiste Foto &amp; Video).</p></li>
+        <li><span>02</span><h3>Reservás tu lugar</h3><p>Nos escribís por WhatsApp y te pasamos los datos de transferencia.</p></li>
+        <li><span>03</span><h3>Mandás tus productos</h3><p>En estas jornadas nos manejamos con envíos, ya que son muchas marcas en un mismo día: no podemos recibir a todo el equipo.</p></li>
+        <li><span>04</span><h3>Recibís tu contenido</h3><p>Tus fotos editadas en 5 días hábiles (igual, casi siempre te las mandamos antes 😉) y el video, si elegiste Foto &amp; Video.</p></li>
       </ol>
     </section>
 
@@ -172,7 +175,14 @@ const datosCliente = {
                   <span class="fdp-card-ph">CIAVA</span>
                 )}
                 <div class="fdp-date"><span>{j.dia}</span><strong>{j.num}</strong><span>{j.mes}</span></div>
-                {j.etiqueta && <span class="fdp-card-tag">{j.etiqueta}</span>}
+                {j.etiqueta ? (
+          <span class="fdp-card-tag">
+            {j.etiqueta}
+            {j.fotosLocacion && j.fotosLocacion.length > 0 && <small class="fdp-card-tag-hint">📸 ¡Mirá más fotos de la locación!</small>}
+          </span>
+        ) : (
+          <span class="fdp-card-tag">NORDELTA STUDIO</span>
+        )}
                 {j.ig && (
                   <a class="fdp-card-ig" href={`https://www.instagram.com/${j.ig}/`} target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label={`Ver Instagram de ${j.modelo}`}>
                     <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>
@@ -182,7 +192,8 @@ const datosCliente = {
               </div>
               <div class="fdp-card-body">
                 <span class={`fdp-chip ${j.estado.clase}`}>{j.estado.texto}</span>
-                <h3>{j.modelo}</h3>
+                <h3>MODELO: {j.modelo}</h3>
+            {j.tematica && <p class="fdp-card-tematica">{j.tematicaEmoji} TEMATICA {j.tematica}</p>}
                 {j.horario && <p>{j.horario}</p>}
                 <span class="fdp-more">{j.completo ? 'Ver jornada' : 'Ver y reservar'} →</span>
               </div>
@@ -205,11 +216,12 @@ const datosCliente = {
         {packs.map((p) => (
           <div class="fdp-pack-card">
             <h3>{p.nombre}</h3>
-            <p class="fdp-pack-price">{precio(p.precio)} {p.precio && p.unidad && <small>{p.unidad}</small>}</p>
+            
             {p.descripcion && <p>{p.descripcion}</p>}
           </div>
         ))}
       </div>
+      <p class="fdp-packs-note">El valor exacto depende de la fecha — <a href="#fechas">entrá a la jornada que te interesa</a> para verlo.</p>
       {extra && (
         <div class="fdp-extra">
           <div>
@@ -235,10 +247,10 @@ const datosCliente = {
       <h2 class="fdp-h2">A TENER EN CUENTA</h2>
       <ul class="fdp-cond">
         <li>Cada look incluye hasta dos prendas (por ejemplo, arriba y abajo). Con accesorios es igual: un bolso es un look.</li>
-        <li>Los productos se entregan en una caja cerrada, sí o sí el día anterior a la jornada.</li>
+        <li>Los productos se reciben hasta 24 hs antes del shooting.</li>
         <li>Incluye una ronda de ajustes básicos (luz, foco, detalles). Los cambios extra se cobran aparte.</li>
         <li>Las fotos no se pueden modificar con IA para crear otras variantes: cada producto o color cuenta como un look.</li>
-        <li>Todas las aclaraciones en un solo mensaje escrito, sin audios.</li>
+        <li>Todas las aclaraciones en un solo mensaje escrito.</li>
       </ul>
     </section>
 
@@ -260,15 +272,29 @@ const datosCliente = {
       {jornadas.map((j) => (
         <div class="fdp-detail" data-j={j.i} hidden>
           <div class="fdp-gal">
-            {j.fotos.length > 0 ? j.fotos.map((f, k) => (
-              <Image src={f} alt={`${j.modelo} — foto ${k + 1}`} widths={[400, 800]} sizes="(max-width: 767px) 90vw, 420px" class="fdp-gal-img" loading="lazy" quality={78} />
-            )) : (
-              <div class="fdp-gal-ph">Fotos de la modelo próximamente</div>
-            )}
+            <div class="fdp-gal-main">
+              {j.fotos.length > 0 ? j.fotos.map((f, k) => (
+                <Image src={f} alt={`${j.modelo} — foto ${k + 1}`} widths={[400, 800]} sizes="(max-width: 767px) 90vw, 420px" class="fdp-gal-img fdp-gal-img-main" loading="lazy" quality={78} />
+              )) : (
+                <div class="fdp-gal-ph">Fotos de la modelo próximamente</div>
+              )}
+            </div>
+{j.fotosLocacion && j.fotosLocacion.length > 0 && j.fotosLocacion.map((f: ImageMetadata, k: number) => (
+<div class="fdp-gal-loc">
+<Image src={f} alt={`Locación de la jornada ${j.dia} ${j.num} ${j.mes}`} widths={[400, 800]} sizes="(max-width: 767px) 90vw, 420px" class="fdp-gal-img" loading="lazy" quality={78} />
+<span class="fdp-gal-loc-badge">¡ESTA ES LA LOCACIÓN!</span>
+</div>
+))}
           </div>
           <div class="fdp-info">
             <p class="fdp-eyebrow">FLASH DAY · {j.dia} {j.num} {j.mes}{j.horario ? ` · ${j.horario}` : ''}</p>
-            <h3 class="fdp-model">{j.modelo}</h3>
+            <h3 class="fdp-model">MODELO: {j.modelo}</h3>
+            {j.tematica && (
+              <p class="fdp-modal-tematica">
+                {j.tematicaEmoji} TEMATICA {j.tematica}
+                {j.tematicaDescripcion && <span class="fdp-modal-tematica-desc"> — {j.tematicaDescripcion}</span>}
+              </p>
+            )}
             {j.ig && (
               <a class="fdp-ig" href={`https://www.instagram.com/${j.ig}/`} target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>
@@ -412,6 +438,8 @@ const datosCliente = {
   .fdp-pack-price { font-size: 26px; font-weight: 700; margin: 0 0 10px; color: #111111; }
   .fdp-pack-price small { font-size: 13px; font-weight: 500; color: #555555; }
   .fdp-pack-card p:last-child { font-size: 14px; color: #555555; line-height: 1.55; margin: 0; }
+.fdp-packs-note { text-align: center; font-size: 13px; color: #777777; margin: 18px 0 0; }
+.fdp-packs-note a { color: #111111; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
 
   /* Condiciones */
   .fdp-cond { max-width: 760px; margin: 24px auto 0; padding: 0; list-style: none; display: grid; gap: 10px; }
@@ -430,9 +458,13 @@ const datosCliente = {
   .fdp-x { position: sticky; top: 14px; float: right; margin: 14px 14px 0 0; z-index: 2; width: 38px; height: 38px; min-width: 38px; min-height: 38px; border-radius: 999px; background: #ffffff; color: #111111; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,.18); cursor: pointer; }
   .fdp-detail { display: grid; grid-template-columns: 1fr 1fr; }
   .fdp-detail[hidden] { display: none; }
-  .fdp-gal { background: #d6af88; display: grid; gap: 4px; align-content: start; max-height: calc(100vh - 32px); overflow-y: auto; border-radius: 26px 0 0 26px; }
+  .fdp-gal { background: #d6af88; display: flex; flex-direction: column; gap: 4px; max-height: calc(100vh - 32px); overflow-y: auto; border-radius: 26px 0 0 26px; }
+  .fdp-gal-main { position: relative; flex: 1 1 auto; min-height: 420px; }
+  .fdp-gal-img.fdp-gal-img-main { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .fdp-gal-img { width: 100%; height: auto; display: block; }
   .fdp-gal-ph { min-height: 420px; display: flex; align-items: center; justify-content: center; color: rgba(17,17,17,.5); font-size: 14px; padding: 24px; text-align: center; }
+.fdp-gal-loc { position: relative; }
+.fdp-gal-loc-badge { position: absolute; left: 12px; bottom: 12px; background: rgba(17,17,17,.85); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: .06em; padding: 7px 13px; border-radius: 999px; }
   .fdp-info { padding: 36px 34px 32px; }
   .fdp-model { font-size: 30px; margin: 4px 0 10px; letter-spacing: .02em; color: #111111; }
   .fdp-ig { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #111111; text-decoration: underline; text-underline-offset: 3px; margin-bottom: 14px; }
@@ -472,7 +504,7 @@ const datosCliente = {
   .fdp-marcas .fdp-sub { margin-bottom: 28px; }
   .fdp-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
   .fdp-track { display: flex; width: max-content; animation: fdpMarquee var(--dur, 60s) linear infinite; }
-  .fdp-marquee:hover .fdp-track { animation-play-state: paused; }
+  @media (hover: hover) { .fdp-marquee:hover .fdp-track { animation-play-state: paused; } }
   .fdp-m-item { flex: none; height: 360px; width: auto; max-width: none; margin-right: 14px; border-radius: 18px; object-fit: cover; background: #f2f2f2; }
   .fdp-m-video { position: relative; flex: none; margin-right: 14px; }
   .fdp-m-video .fdp-m-item { margin-right: 0; }
@@ -511,6 +543,10 @@ const datosCliente = {
   .fdp-ejemplo-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .fdp-ver-ejemplo:hover .fdp-ejemplo-preview, .fdp-ver-ejemplo:focus-within .fdp-ejemplo-preview { opacity: 1; visibility: visible; transform: translateY(0); }
   .fdp-card-tag { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(17,17,17,.82); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-align: center; padding: 8px 10px; }
+  .fdp-card-tag-hint { display: block; font-size: 9.5px; font-weight: 500; letter-spacing: .02em; margin-top: 4px; opacity: .9; }
+  .fdp-card-tematica { margin: 6px 0 0; font-size: 12px; font-weight: 600; color: #b5451b; }
+  .fdp-modal-tematica { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: #b5451b; }
+  .fdp-modal-tematica-desc { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; color: #666666; }
   .fdp-card-ig { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.92); color: #111111; font-size: 11px; font-weight: 600; padding: 5px 10px 5px 8px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.15); text-decoration: none; }
   .fdp-card-ig:hover { background: #ffffff; }
   .fdp-card-ig svg { flex: none; }
@@ -562,8 +598,8 @@ const datosCliente = {
           '👗 Looks: ' + looks + '\n' +
           (D.extra ? '🎬 Reel editado: ' + (quiereReel ? 'Sí, quiero sumarlo' : 'No') + '\n' : '') +
           '💰 Total estimado: ' + total + '\n' +
-          '🏷️ Marca: ' + (marca || '(completar)') + '\n\n' +
-          'ACEPTO ' + (marca || '[nombre de mi marca]');
+          '🏷️ Marca: ' + (marca || '(completar)');
+          
         form.querySelector('[data-reservar]').href = 'https://wa.me/' + D.numero + '?text=' + encodeURIComponent(msg);
       }
 

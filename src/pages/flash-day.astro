@@ -36,6 +36,7 @@ const precio = (n: number | null) => (n ? '$' + n.toLocaleString('es-AR') : 'Con
 type Extra = { nombre: string; precio: number | null; descripcion?: string };
 const extra: Extra | null = ((data as any).extra as Extra) ?? null;
 const desdePrecio = packs.map((p) => p.precio).filter((n): n is number => !!n).sort((a, b) => a - b)[0] ?? null;
+const packsDe = (j: any) => (j.packs && j.packs.length ? j.packs : packs);
 
 const ESTADOS: Record<string, { texto: string; clase: string }> = {
   disponible: { texto: 'Cupos disponibles', clase: 'ok' },
@@ -87,7 +88,7 @@ const datosCliente = {
   numero,
   packs,
   extra,
-  jornadas: Object.fromEntries(jornadas.map((j) => [j.i, { texto: `${j.dia} ${j.num} ${j.mes}`, modelo: j.modelo, horario: j.horario || '' }])),
+  jornadas: Object.fromEntries(jornadas.map((j) => [j.i, { texto: `${j.dia} ${j.num} ${j.mes}`, modelo: j.modelo, horario: j.horario || '', packs: (j as any).packs || null }])),
 };
 ---
 
@@ -163,7 +164,7 @@ const datosCliente = {
       {jornadas.length > 0 ? (
         <div class="fdp-grid">
           {jornadas.map((j) => (
-            <button type="button" class={`fdp-card ${j.completo ? 'is-full' : ''}`} data-open={j.i}>
+            <div class={`fdp-card ${j.completo ? 'is-full' : ''}`} data-open={j.i} role="button" tabindex="0">
               <div class="fdp-card-img">
                 {j.fotos[0] ? (
                   <Image src={j.fotos[0]} alt={`Modelo del Flash Day ${j.dia} ${j.num} ${j.mes}`} widths={[400, 700]} sizes="(max-width: 767px) 100vw, 33vw" class="fdp-cover" loading="lazy" quality={75} />
@@ -171,6 +172,13 @@ const datosCliente = {
                   <span class="fdp-card-ph">CIAVA</span>
                 )}
                 <div class="fdp-date"><span>{j.dia}</span><strong>{j.num}</strong><span>{j.mes}</span></div>
+                {j.etiqueta && <span class="fdp-card-tag">{j.etiqueta}</span>}
+                {j.ig && (
+                  <a class="fdp-card-ig" href={`https://www.instagram.com/${j.ig}/`} target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label={`Ver Instagram de ${j.modelo}`}>
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>
+                    <span>@{j.ig}</span>
+                  </a>
+                )}
               </div>
               <div class="fdp-card-body">
                 <span class={`fdp-chip ${j.estado.clase}`}>{j.estado.texto}</span>
@@ -178,7 +186,7 @@ const datosCliente = {
                 {j.horario && <p>{j.horario}</p>}
                 <span class="fdp-more">{j.completo ? 'Ver jornada' : 'Ver y reservar'} →</span>
               </div>
-            </button>
+            </div>
           ))}
         </div>
       ) : (
@@ -278,13 +286,22 @@ const datosCliente = {
               <div class="fdp-form" data-form={j.i}>
                 <p class="fdp-label">1. Elegí tu pack</p>
                 <p class="fdp-hint fdp-hint-top">Es uno u otro: el pack que elijas aplica a todos tus looks.</p>
-                {packs.map((p, k) => (
+                {packsDe(j).map((p, k) => (
                   <label class="fdp-opt">
                     <input type="radio" name={`pack-${j.i}`} value={k} checked={k === 0} />
-                    <span class="fdp-opt-txt"><strong>{p.nombre}</strong><small>{p.descripcion}</small></span>
-                    <span class="fdp-opt-price">{precio(p.precio)}</span>
+                    <span class="fdp-opt-txt">
+                      <strong>{p.nombre}</strong>
+                      <small>{p.descripcion}</small>
+                      {p.tramos && <small class="fdp-tiers">+7 looks: {precio(p.tramos[1]?.precio)} c/u · +14: {precio(p.tramos[2]?.precio)} c/u</small>}
+                    </span>
+                    <span class="fdp-opt-price">{p.tramos ? precio(p.tramos[0].precio) : precio(p.precio)}</span>
                   </label>
                 ))}
+                {j.notas && j.notas.length > 0 && (
+                  <ul class="fdp-notas">
+                    {j.notas.map((n: string) => <li>{n}</li>)}
+                  </ul>
+                )}
                 <p class="fdp-label">2. ¿Cuántos looks?</p>
                 <div class="fdp-counter">
                   <button type="button" data-step="-1" aria-label="Menos looks">−</button>
@@ -493,6 +510,15 @@ const datosCliente = {
   .fdp-ejemplo-preview { position: absolute; left: 0; bottom: calc(100% + 10px); width: 150px; aspect-ratio: 9 / 16; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,.3); opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .18s, transform .18s; pointer-events: none; z-index: 20; background: #000000; }
   .fdp-ejemplo-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .fdp-ver-ejemplo:hover .fdp-ejemplo-preview, .fdp-ver-ejemplo:focus-within .fdp-ejemplo-preview { opacity: 1; visibility: visible; transform: translateY(0); }
+  .fdp-card-tag { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(17,17,17,.82); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-align: center; padding: 8px 10px; }
+  .fdp-card-ig { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,.92); color: #111111; font-size: 11px; font-weight: 600; padding: 5px 10px 5px 8px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.15); text-decoration: none; }
+  .fdp-card-ig:hover { background: #ffffff; }
+  .fdp-card-ig svg { flex: none; }
+  .fdp-notas { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 6px; }
+  .fdp-notas li { font-size: 12px; color: #555555; line-height: 1.5; padding-left: 16px; position: relative; }
+  .fdp-notas li::before { content: '•'; position: absolute; left: 0; color: #b08a63; font-weight: 700; }
+  .fdp-opt-txt small.fdp-tiers { display: block; margin-top: 2px; color: #b08a63; font-weight: 600; }
+  @media (max-width: 767px) { .fdp-card-tag { font-size: 10px; padding: 7px 8px; } .fdp-card-ig { top: 10px; right: 10px; font-size: 10px; } }
 </style>
 
 <script is:inline>
@@ -505,16 +531,28 @@ const datosCliente = {
       var D = JSON.parse(raw.textContent || '{}');
       var fmt = function (n) { return '$' + Number(n).toLocaleString('es-AR'); };
 
+      function precioPorLook(pack, looks) {
+        if (pack && pack.tramos && pack.tramos.length) {
+          for (var t = 0; t < pack.tramos.length; t++) {
+            if (pack.tramos[t].hasta == null || looks <= pack.tramos[t].hasta) return pack.tramos[t].precio;
+          }
+          return pack.tramos[pack.tramos.length - 1].precio;
+        }
+        return pack && pack.precio ? pack.precio : null;
+      }
+
       function actualizar(form) {
         var j = D.jornadas[form.getAttribute('data-form')];
+        var packsList = (j.packs && j.packs.length) ? j.packs : D.packs;
         var sel = form.querySelector('input[type=radio]:checked');
-        var pack = D.packs[sel ? Number(sel.value) : 0] || {};
+        var pack = packsList[sel ? Number(sel.value) : 0] || {};
         var looks = Number(form.querySelector('[data-looks]').textContent) || 1;
         var marca = (form.querySelector('[data-marca]').value || '').trim();
         var reelEl = form.querySelector('[data-reel]');
         var quiereReel = !!(reelEl && reelEl.checked);
         var ex = D.extra || {};
-        var base = pack.precio ? pack.precio * looks : null;
+        var porLook = precioPorLook(pack, looks);
+        var base = porLook ? porLook * looks : null;
         var total = base === null ? 'A confirmar' : (quiereReel && ex.precio ? fmt(base + ex.precio) : fmt(base) + (quiereReel ? ' + reel' : ''));
         form.querySelector('[data-total]').textContent = total;
         var msg = '¡Hola Ciava! Quiero reservar mi lugar en el Flash Day 📸\n\n' +
@@ -557,6 +595,7 @@ const datosCliente = {
       }
       document.querySelectorAll('[data-open]').forEach(function (c) {
         c.addEventListener('click', function () { abrir(c.getAttribute('data-open')); });
+        c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(c.getAttribute('data-open')); } });
       });
       modal.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', cerrar); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('is-open')) cerrar(); });

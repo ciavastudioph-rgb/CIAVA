@@ -143,7 +143,10 @@ const datosCliente = {
               m.tipo === 'foto' ? (
                 <Image src={m.img} alt={k < muestras.length ? 'Contenido de una marca en un Flash Day de CIAVA' : ''} widths={[300, 520]} sizes="260px" class="fdp-m-item" loading="lazy" decoding="async" quality={70} />
               ) : (
-                <video class="fdp-m-item" src={m.src} autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+                <div class="fdp-m-video">
+                  <video class="fdp-m-item" src={m.src} autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+                  <span class="fdp-m-badge">REEL EDITADO</span>
+                </div>
               )
             ))}
           </div>
@@ -436,9 +439,12 @@ const datosCliente = {
   .fdp-track { display: flex; width: max-content; animation: fdpMarquee var(--dur, 60s) linear infinite; }
   .fdp-marquee:hover .fdp-track { animation-play-state: paused; }
   .fdp-m-item { flex: none; height: 360px; width: auto; max-width: none; margin-right: 14px; border-radius: 18px; object-fit: cover; background: #f2f2f2; }
+  .fdp-m-video { position: relative; flex: none; margin-right: 14px; }
+  .fdp-m-video .fdp-m-item { margin-right: 0; }
   video.fdp-m-item { aspect-ratio: 9 / 16; }
+  .fdp-m-badge { position: absolute; top: 10px; left: 10px; background: rgba(17,17,17,.82); color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 5px 10px; border-radius: 999px; }
   @keyframes fdpMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  @media (max-width: 767px) { .fdp-marcas { padding-top: 52px; } .fdp-m-item { height: 250px; margin-right: 10px; border-radius: 14px; } }
+  @media (max-width: 767px) { .fdp-marcas { padding-top: 52px; } .fdp-m-item { height: 250px; margin-right: 10px; border-radius: 14px; } .fdp-m-video { margin-right: 10px; } .fdp-m-badge { font-size: 9px; padding: 4px 8px; } }
   @media (prefers-reduced-motion: reduce) { .fdp-track { animation: none; } .fdp-marquee { overflow-x: auto; } }
 
   @media (max-width: 900px) { .fdp-steps { grid-template-columns: repeat(2, 1fr); } }

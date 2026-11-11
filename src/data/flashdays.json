@@ -15,14 +15,14 @@
   ],
   "extra": {
     "nombre": "Reel editado",
-    "precio": null,
+    "precio": 50000,
     "descripcion": "Elegís la música, el texto, transiciones simples y qué looks salen en el reel."
   },
   "jornadas": [
     {
       "fecha": "2026-11-18",
       "horario": "",
-      "modelo": "marianvsoler",
+      "modelo": "MARIAN",
       "instagram": "marianvsoler",
       "estado": "disponible",
       "etiqueta": "LOCACIÓN ESPECIAL",
@@ -77,7 +77,7 @@
     {
       "fecha": "2026-11-23",
       "horario": "",
-      "modelo": "victoriandrino",
+      "modelo": "VICKY ANDRINO",
       "instagram": "victoriandrino",
       "estado": "disponible",
       "etiqueta": "LOCACIÓN ESPECIAL",
@@ -132,7 +132,7 @@
     {
       "fecha": "2026-11-30",
       "horario": "",
-      "modelo": "carolinafh__",
+      "modelo": "CARO",
       "instagram": "carolinafh__",
       "estado": "disponible",
       "notas": [
@@ -186,7 +186,7 @@
     {
       "fecha": "2026-12-02",
       "horario": "",
-      "modelo": "vickyypaleo",
+      "modelo": "VICKY PALEO",
       "instagram": "vickyypaleo",
       "estado": "disponible",
       "packs": [
@@ -236,7 +236,7 @@
     {
       "fecha": "2026-12-03",
       "horario": "",
-      "modelo": "orianacanias",
+      "modelo": "ORI",
       "instagram": "orianacanias",
       "estado": "disponible",
       "packs": [
